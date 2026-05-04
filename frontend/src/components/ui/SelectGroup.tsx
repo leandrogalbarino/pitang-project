@@ -28,7 +28,7 @@ export function SelectGroup({
 }: SelectGroupProps) {
   return (
     <div className="grid gap-2">
-      <Label>{label}</Label>
+      <Label htmlFor={name}>{label}</Label>
       <Controller
         name={name}
         control={control}
@@ -38,7 +38,7 @@ export function SelectGroup({
             onValueChange={field.onChange} 
             disabled={disabled}
           >
-            <SelectTrigger className={error ? 'border-destructive' : ''}>
+            <SelectTrigger id={name} className={error ? 'border-destructive' : ''}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
