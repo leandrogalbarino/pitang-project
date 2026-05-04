@@ -1,91 +1,79 @@
-# Pitang Reimbursement Control
+# Pitang - Projeto de Controle de Reembolsos -
 
-Sistema Fullstack para controle e gestão de reembolsos, desenvolvido para o desafio técnico da Pitang.
+Sistema robusto para controle e gestão de reembolsos, desenvolvido com foco em performance, escalabilidade e excelente experiência de usuário.
 
-## Tecnologias Utilizadas
-
-### Backend
-
-- **Runtime**: [Bun](https://bun.sh/)
-- **Framework**: Express.js (TypeScript)
-- **ORM**: Prisma
-- **Banco de Dados**: PostgreSQL
-- **Autenticação**: JWT (JSON Web Token)
-- **Validação**: Zod
-- **Uploads**: Multer (Armazenamento local em disco)
-
-### Frontend
-
-- **Framework**: React + Vite (TypeScript)
-- **Estilização**: TailwindCSS + Shadcn/UI
-- **Gerenciamento de Estado**: Context API + SWR (Fetching & Caching)
-- **Roteamento**: React Router
-- **Formulários**: React Hook Form + Zod
+---
 
 ## Pré-requisitos
 
-- [Bun](https://bun.sh/) instalado (v1.0+)
-- Docker (opcional, para o banco de dados) ou PostgreSQL local
+Para rodar este projeto, você precisará ter instalado em sua máquina:
 
-## Como Rodar
+- [Bun](https://bun.sh/) (Runtime e Gerenciador de Pacotes)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Para o Banco de Dados)
+- [Git](https://git-scm.com/)
 
-### 1. Configuração Inicial
+---
 
-Na raiz do projeto, instale as dependências e configure o banco:
+## Como Rodar o Projeto
+
+Siga os passos abaixo para subir o ambiente de desenvolvimento:
+
+### 1. Clonar o Repositório
 
 ```bash
-# Instalar dependências
-bun install
+git clone https://github.com/seu-usuario/pitang-project.git
+cd pitang-project
+```
 
-# Configurar banco de dados e rodar seeds
+### 2. Configurar Variáveis de Ambiente
+
+Crie um arquivo `.env` na pasta `backend/` seguindo o exemplo abaixo:
+
+```env
+DATABASE_URL="SEU_DATABASE_URL"
+JWT_PRIVATE_KEY="SUA_CHAVE_SECRETA_AQUI"
+HTTP_PORT=3000
+```
+
+### 3. Instalar Dependências
+
+```bash
+bun install
+```
+
+### 4. Subir o Banco de Dados (Docker)
+
+Certifique-se de que o Docker Desktop está aberto e rode:
+
+```bash
+docker compose up -d db
+```
+
+### 5. Inicializar e Rodar
+
+O comando abaixo irá aplicar as migrações do banco, popular os dados iniciais (seed) e iniciar o Frontend e Backend simultaneamente:
+
+```bash
 bun run dev:init
 ```
 
-### 2. Rodar o Projeto
+---
 
-```bash
-bun run dev
-```
+## Usuários para Teste (Seed)
 
-O backend rodará em `http://localhost:3000` e o frontend em `http://localhost:5173`.
+Após rodar o comando de inicialização, você pode acessar o sistema com os seguintes perfis:
+
+| Perfil          | E-mail                 | Senha     |
+| :-------------- | :--------------------- | :-------- |
+| **Admin**       | admin@pitang.com       | pitang123 |
+| **Gestor**      | gestor@pitang.com      | pitang123 |
+| **Financeiro**  | financeiro@pitang.com  | pitang123 |
+| **Colaborador** | colaborador@pitang.com | pitang123 |
 
 ---
 
-## Testes
+## Tecnologias Utilizadas
 
-### Backend (Jest + Supertest)
-
-```bash
-cd backend
-bun run test
-```
-
-### Frontend (Vitest + RTL)
-
-```bash
-cd frontend
-bun run test run
-```
-
----
-
-## Perfis de Acesso (Dados do Seed)
-
-| Perfil          | E-mail             | Senha      | Permissões                      |
-| :-------------- | :----------------- | :--------- | :------------------------------ |
-| **Admin**       | admin@pitang.com   | admin123   | Gestão de categorias e usuários |
-| **Colaborador** | colab@pitang.com   | colab123   | Cria e envia reembolsos         |
-| **Gestor**      | gestor@pitang.com  | gestor123  | Aprova ou Rejeita solicitações  |
-| **Financeiro**  | finance@pitang.com | finance123 | Marca solicitações como pagas   |
-
----
-
-## Estrutura de Pastas
-
-- `/backend`: Servidor Express, Prisma Schema e Logica de Negócios.
-- `backend/src/uploads`: Pasta local onde são salvos os comprovantes (Backend).
-- `/frontend`: Aplicação React, Componentes Shadcn e Hooks.
-
----
-
-Desenvolvido por **Leandro Galbarino**.
+- **Frontend**: React, Vite, TailwindCSS, TanStack Router, SWR.
+- **Backend**: Node.js/Bun, Express, Prisma ORM.
+- **Infra**: Docker, PostgreSQL.
