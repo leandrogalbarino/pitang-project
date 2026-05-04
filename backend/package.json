@@ -11,6 +11,7 @@
     "db:setup": "bun scripts/setup-db.ts"
   },
   "devDependencies": {
+    "@prisma/config": "^7.8.0",
     "@types/bun": "latest",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.1.0",

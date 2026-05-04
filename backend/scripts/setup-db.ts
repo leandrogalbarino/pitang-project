@@ -22,7 +22,20 @@ if (migrate.status !== 0) {
   process.exit(1);
 }
 
-// 2. Rodar Seed
+// 2. Gerar o Prisma Client
+console.log('\nGerando Prisma Client...');
+const generate = spawnSync('bunx', ['prisma', 'generate'], {
+  cwd: backendDir,
+  stdio: 'inherit',
+  shell: true,
+});
+
+if (generate.status !== 0) {
+  console.error('Erro ao gerar Prisma Client.');
+  process.exit(1);
+}
+
+// 3. Rodar Seed
 console.log('\n🌱 Populando banco de dados (Seed)...');
 const seed = spawnSync('bun', ['run', 'prisma/seed.ts'], {
   cwd: backendDir,

@@ -2,7 +2,6 @@ generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
-
 datasource db {
   provider = "postgresql"
 }
@@ -100,5 +99,3 @@ model RequestHistory {
   request     ReimbursementRequest @relation(fields: [requestId], references: [id])
   user        User                 @relation(fields: [userId], references: [id])
 }
-
-
