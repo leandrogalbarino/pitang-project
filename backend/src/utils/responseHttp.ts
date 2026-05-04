@@ -45,10 +45,11 @@ export const clientError400 = (response: Response, message: string) => {
 
 export const clientErrorConflict409 = (
   response: Response,
-  fieldsErrors: Record<string, string[] | undefined>,
+  message: string,
+  fieldsErrors?: Record<string, string[] | undefined>,
 ) => {
   return response.status(STATUS_CODE.HTTP_CONFLICT_409).json({
-    message: 'Conflito durante a operação.',
+    message,
     data: fieldsErrors,
     statusCode: 409,
   });

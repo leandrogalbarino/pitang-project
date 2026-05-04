@@ -54,7 +54,7 @@ export const createCategory = async (request: Request, response: Response) => {
     });
 
     if (existing) {
-      return res.clientErrorConflict409(response, {
+      return res.clientErrorConflict409(response, 'Já existe uma categoria com este nome.', {
         name: ['Já existe uma categoria com este nome.'],
       });
     }
@@ -103,7 +103,7 @@ export const updateCategory = async (request: Request, response: Response) => {
       });
 
       if (existing) {
-        return res.clientErrorConflict409(response, {
+        return res.clientErrorConflict409(response, 'Já existe uma categoria com este nome.', {
           name: ['Já existe uma categoria com este nome.'],
         });
       }
