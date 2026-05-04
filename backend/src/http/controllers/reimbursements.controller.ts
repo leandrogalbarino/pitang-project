@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express';
 import dayjs from 'dayjs';
+import fs from 'fs';
+import path from 'path';
 import * as res from '../../utils/responseHttp';
 import { prisma } from '../../core/prismaClient';
 import {
@@ -54,7 +56,11 @@ export const createReimbursement = async (
       },
     });
 
-    return res.successCreated(response, 'Solicitação criada com sucesso.');
+    return res.successCreated(
+      response,
+      'Solicitação criada com sucesso.',
+      reimbursement,
+    );
   } catch (error) {
     console.error(error);
     return res.serverError500(response);
@@ -422,16 +428,26 @@ export const getReimbursements = async (
     // ADMIN vê tudo
 
     const { search } = request.query;
-    
+
     if (search) {
       whereClause = {
         AND: [
           whereClause,
           {
             OR: [
-              { description: { contains: String(search), mode: 'insensitive' } },
-              { category: { name: { contains: String(search), mode: 'insensitive' } } },
-              { user: { name: { contains: String(search), mode: 'insensitive' } } },
+              {
+                description: { contains: String(search), mode: 'insensitive' },
+              },
+              {
+                category: {
+                  name: { contains: String(search), mode: 'insensitive' },
+                },
+              },
+              {
+                user: {
+                  name: { contains: String(search), mode: 'insensitive' },
+                },
+              },
             ],
           },
         ],
@@ -453,6 +469,7 @@ export const getReimbursements = async (
         where: { ...whereClause },
         include: {
           category: true,
+          attachments: true,
           user: {
             select: { name: true, email: true },
           },
@@ -560,11 +577,7 @@ export const addAttachments = async (request: Request, response: Response) => {
 
     const attachments = await Promise.all(
       files.map((file) => {
-        // Se o path começar com http, assumimos que é uma URL do Cloudinary.
-        // Caso contrário, montamos a URL local.
-        const fileUrl = file.path.startsWith('http')
-          ? file.path
-          : `${request.protocol}://${request.get('host')}/uploads/${file.filename}`;
+        const fileUrl = `${request.protocol}://${request.get('host')}/uploads/${file.filename}`;
 
         return prisma.attachment.create({
           data: {
@@ -576,6 +589,17 @@ export const addAttachments = async (request: Request, response: Response) => {
         });
       }),
     );
+
+    // Gerar histórico com os nomes dos arquivos
+    const fileNames = files.map((f) => f.originalname).join(', ');
+    await prisma.requestHistory.create({
+      data: {
+        requestId: validatedId.data.id,
+        userId: request.user.id,
+        action: 'UPDATED',
+        observation: `Adicionado(s) ${files.length} anexo(s): ${fileNames}`,
+      },
+    });
 
     return res.successData(response, attachments);
   } catch (error) {
@@ -698,11 +722,30 @@ export const deleteAttachment = async (
       return res.notFound404(response, 'Anexo não encontrado.');
     }
 
-    await prisma.attachment.delete({
+    const file = await prisma.attachment.delete({
       where: { id: validatedAttachementId.data.id },
     });
 
-    // Opcional: Aqui poderíamos deletar o arquivo físico do disco/Cloudinary se necessário.
+    // Gerar histórico com os nomes dos arquivos
+    await prisma.requestHistory.create({
+      data: {
+        requestId: validatedId.data.id,
+        userId: request.user.id,
+        action: 'UPDATED',
+        observation: `Removendo 1 anexo(s): ${file.fileName}`,
+      },
+    });
+
+    // Remover arquivo físico do disco
+    if (file.fileUrl.includes('/uploads/')) {
+      const fileName = file.fileUrl.split('/uploads/').pop();
+      if (fileName) {
+        const filePath = path.join(process.cwd(), 'uploads', fileName);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    }
 
     return res.successDelete204(response);
   } catch (error) {

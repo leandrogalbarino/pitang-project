@@ -17,6 +17,7 @@ import { handleApiErrors } from '@/lib/form-utils';
 // import { data } from 'react-router-dom';
 import { TextAreaGroup } from '@/components/ui/TextAreaGroup';
 import { CategorySelectGroup } from '@/components/dashboard/reimbursements/CategorySelectGroup';
+import { FileAttachmentField } from '@/components/dashboard/reimbursements/FileAttachmentField';
 
 interface ReimbursementFormProps {
   reimbursement?: Reimbursement | null;
@@ -30,6 +31,10 @@ export function ReimbursementForm({
   onCancel,
 }: ReimbursementFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState(
+    reimbursement?.attachments || [],
+  );
   const isEditing = !!reimbursement;
 
   const { data: categoriesResponse } = useSWR<CategoriesResponse>(
@@ -60,7 +65,7 @@ export function ReimbursementForm({
       reset({
         categoryId: reimbursement ? reimbursement.categoryId : '',
         description: reimbursement ? reimbursement.description : '',
-        amount: reimbursement ? reimbursement.amount : reimbursement.amount,
+        amount: reimbursement ? reimbursement.amount : 0,
         expenseDate: reimbursement
           ? formatDateForInput(reimbursement.expenseDate)
           : formatDateForInput(new Date()),
@@ -72,13 +77,26 @@ export function ReimbursementForm({
     try {
       setIsSubmitting(true);
 
+      let reimbursementId = reimbursement?.id;
+
       if (isEditing) {
-        await api.put(`/reimbursements/${reimbursement.id}`, data);
-        onSuccess();
-        return;
+        await api.put(`/reimbursements/${reimbursementId}`, data);
+      } else {
+        const response: any = await api.post('/reimbursements', data);
+        reimbursementId = response.id;
       }
 
-      await api.post('/reimbursements', data);
+      // Upload de anexos se houver arquivos selecionados
+      if (selectedFiles.length > 0 && reimbursementId) {
+        const formData = new FormData();
+        selectedFiles.forEach((file) => formData.append('files', file));
+
+        await api.post(
+          `/reimbursements/${reimbursementId}/attachments`,
+          formData,
+        );
+      }
+
       onSuccess();
     } catch (error) {
       if (handleApiErrors(error, setError)) return;
@@ -86,6 +104,19 @@ export function ReimbursementForm({
       toast.error(apiError.message || 'Erro ao salvar solicitação');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteExisting = async (attachmentId: string) => {
+    if (!reimbursement) return;
+
+    try {
+      await api.delete(`/reimbursements/${reimbursement.id}/attachments/${attachmentId}`);
+      setExistingAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+      toast.success('Anexo removido');
+    } catch (error) {
+      console.error('Erro ao deletar anexo:', error);
+      toast.error('Erro ao remover anexo');
     }
   };
 
@@ -105,7 +136,7 @@ export function ReimbursementForm({
       <div className="grid gap-4">
         <CategorySelectGroup
           control={control}
-          categories={categoriesResponse.data}
+          categories={categoriesResponse?.data || []}
           error={errors.categoryId}
         />
 
@@ -132,6 +163,13 @@ export function ReimbursementForm({
           type="date"
           registration={register('expenseDate')}
           error={errors.expenseDate}
+        />
+
+        <FileAttachmentField
+          onFilesChange={setSelectedFiles}
+          selectedFiles={selectedFiles}
+          existingAttachments={existingAttachments}
+          onDeleteExisting={isEditing ? handleDeleteExisting : undefined}
         />
       </div>
     </FormModalLayout>

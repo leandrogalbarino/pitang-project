@@ -1,55 +1,25 @@
 import type { Request, Response, NextFunction } from 'express';
 import multer, { MulterError } from 'multer';
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { environment } from '../../core/environmentEnv';
 import * as resHelper from '../../utils/responseHttp';
 import path from 'node:path';
 import fs from 'node:fs';
 
-// Verifica se as credenciais do Cloudinary estão presentes
-const isCloudinaryConfigured = !!(
-  environment.CLOUDINARY_CLOUD_NAME &&
-  environment.CLOUDINARY_API_KEY &&
-  environment.CLOUDINARY_API_SECRET
-);
 
-let storage: multer.StorageEngine;
+const uploadDir = path.resolve(process.cwd(), 'uploads');
 
-if (isCloudinaryConfigured) {
-  console.log('Utilizando armazenamento no Cloudinary.');
-  cloudinary.config({
-    cloud_name: environment.CLOUDINARY_CLOUD_NAME,
-    api_key: environment.CLOUDINARY_API_KEY,
-    api_secret: environment.CLOUDINARY_API_SECRET,
-  });
-
-  storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: 'uploads-reimbursements',
-      allowed_formats: ['jpg', 'png', 'pdf', 'jpeg'],
-      resource_type: 'auto',
-    } as any,
-  });
-} else {
-  console.log('Cloudinary não configurado. Utilizando armazenamento local na pasta /uploads.');
-  const uploadDir = path.resolve(process.cwd(), 'uploads');
-  
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  storage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
-      cb(null, uploadDir);
-    },
-    filename: (_req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
-    },
-  });
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
+  },
+});
 
 const uploadConfig = multer({
   storage: storage,
