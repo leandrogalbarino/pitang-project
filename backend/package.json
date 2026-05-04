@@ -1,0 +1,48 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --runInBand",
+    "test:migrate": "cross-env NODE_ENV=test prisma db push",
+    "test:setup": "bun scripts/setup-test-db.ts",
+    "dev": "bun --watch src/server.ts",
+    "db:setup": "bun scripts/setup-db.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/jest": "^30.0.0",
+    "@types/multer": "^2.1.0",
+    "@types/pg": "^8.20.0",
+    "@types/supertest": "^7.2.0",
+    "cross-env": "^10.1.0",
+    "jest": "^30.3.0",
+    "prima": "^0.0.1",
+    "prisma": "^7.8.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.9"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.20",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "pg": "^8.20.0",
+    "zod": "^4.3.6"
+  }
+}

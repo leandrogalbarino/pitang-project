@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Perfis de usuário conforme o desafio
+enum Role {
+  COLABORADOR
+  GESTOR
+  FINANCEIRO
+  ADMIN
+}
+
+// Status da solicitação de reembolso
+enum RequestStatus {
+  RASCUNHO
+  ENVIADO
+  APROVADO
+  REJEITADO
+  PAGO
+  CANCELADO
+}
+
+// Ações para o histórico de auditoria
+enum HistoryAction {
+  CREATED
+  UPDATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PAID
+  CANCELED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(COLABORADOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  active Boolean @default(true)
+
+  requests  ReimbursementRequest[]
+  histories RequestHistory[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requests ReimbursementRequest[]
+}
+
+model ReimbursementRequest {
+  id                   String        @id @default(uuid())
+  userId     String
+  categoryId String
+  description          String
+  amount               Float
+  expenseDate          DateTime
+  status               RequestStatus @default(RASCUNHO)
+  rejectionDescription String?       
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User             @relation(fields: [userId], references: [id])
+  category    Category         @relation(fields: [categoryId], references: [id])
+  attachments Attachment[]
+  histories   RequestHistory[]
+}
+
+model Attachment {
+  id           String @id @default(uuid())
+  requestId    String
+  fileName     String
+  fileUrl      String
+  fileType     String 
+  createdAt    DateTime @default(now())
+
+  request      ReimbursementRequest @relation(fields: [requestId], references: [id])
+}
+
+model RequestHistory {
+  id          String        @id @default(uuid())
+  requestId   String
+  userId      String
+  action      HistoryAction
+  observation String?       // Observação sobre a ação realizada
+  createdAt   DateTime @default(now())
+
+  request     ReimbursementRequest @relation(fields: [requestId], references: [id])
+  user        User                 @relation(fields: [userId], references: [id])
+}
+
+
