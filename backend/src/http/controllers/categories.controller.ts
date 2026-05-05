@@ -16,10 +16,24 @@ export const getCategories = async (request: Request, response: Response) => {
 
     const { skip, take } = getPagination(page, limit);
 
+    const { search } = request.query;
+    let whereClause: any = { active: true };
+
+    if (search) {
+      whereClause = {
+        AND: [
+          whereClause,
+          {
+            name: { contains: String(search), mode: 'insensitive' },
+          },
+        ],
+      };
+    }
+
     const [total, result] = await Promise.all([
-      prisma.category.count({ where: { active: true } }),
+      prisma.category.count({ where: whereClause }),
       prisma.category.findMany({
-        where: { active: true },
+        where: whereClause,
         skip,
         take,
         orderBy: { name: 'asc' },

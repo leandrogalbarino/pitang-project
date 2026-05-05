@@ -13,6 +13,7 @@ interface TableContainerProps {
   totalPages?: number;
   onPageChange?: (page: number) => void;
   totalItems?: number;
+  extraHeader?: React.ReactNode;
 }
 
 export function TableContainer({
@@ -25,9 +26,15 @@ export function TableContainer({
   totalPages,
   onPageChange,
   totalItems,
+  extraHeader,
 }: TableContainerProps) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+      {extraHeader && (
+        <div className="px-4 pt-4 border-b border-slate-50">
+          {extraHeader}
+        </div>
+      )}
       {showSearch && (
         <div className="p-4 border-b border-slate-50 flex items-center gap-4">
           <div className="relative flex-1">

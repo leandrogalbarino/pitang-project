@@ -28,6 +28,7 @@ interface ReimbursementTableProps {
   totalPages?: number;
   onPageChange: (page: number) => void;
   totalItems?: number;
+  extraHeader?: React.ReactNode;
 }
 
 export function ReimbursementTable({
@@ -45,21 +46,23 @@ export function ReimbursementTable({
   totalPages,
   onPageChange,
   totalItems,
+  extraHeader,
 }: ReimbursementTableProps) {
   return (
     <TableContainer
-      searchPlaceholder="Buscar por descrição..."
+      searchPlaceholder="Buscar por colaborador..."
       searchValue={searchValue}
       onSearchChange={onSearchChange}
       currentPage={currentPage}
       totalPages={totalPages}
       onPageChange={onPageChange}
       totalItems={totalItems}
+      extraHeader={extraHeader}
     >
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-slate-50">
-            <TableHead>Descrição</TableHead>
+            <TableHead>Colaborador</TableHead>
             <TableHead>Categoria</TableHead>
             <TableHead>Data</TableHead>
             <TableHead>Valor</TableHead>
@@ -72,7 +75,7 @@ export function ReimbursementTable({
           {reimbursements.map((item) => (
             <TableRow key={item.id} className="border-slate-50">
               <TableCell className="font-medium text-slate-900">
-                {item.description}
+                {item.user.name}
               </TableCell>
               <TableCell className="text-slate-500">
                 {item.category?.name || 'Sem categoria'}

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { api } from '@/lib/api-client';
@@ -16,6 +16,8 @@ import { RejectReimbursementDialog } from './components/RejectReimbursementDialo
 import { ReimbursementDetails } from './components/ReimbursementDetails';
 import type { RejectionFormData } from '@/schemas/reimbursementSchema';
 import { formatCurrency } from '@/lib/utils';
+import type { CategoriesResponse } from '@/types/categoriesTypes';
+import { ReimbursementFilters } from './components/ReimbursementFilters';
 
 const confirmTitles = {
   cancel: 'Cancelar solicitação?',
@@ -45,14 +47,24 @@ export default function ReimbursementsList() {
   // Inicializa o estado a partir da URL ou valores padrão
   const page = Number(searchParams.get('page')) || 1;
   const search = searchParams.get('search') || '';
+  const statusFilter = searchParams.get('status') || '';
+  const categoryFilter = searchParams.get('category') || '';
+  const order = searchParams.get('order') || 'date';
+  const orderDirection = searchParams.get('orderDirection') || 'desc';
 
   const { data: response, mutate } = useSWR<ReimbursementListResponse>(() => {
     const params = new URLSearchParams();
     if (page > 1) params.set('page', String(page));
     if (search) params.set('search', search);
+    if (statusFilter) params.set('status', statusFilter);
+    if (categoryFilter) params.set('category', categoryFilter);
+    if (order) params.set('order', order);
+    if (orderDirection) params.set('orderDirection', orderDirection);
     const query = params.toString();
     return `/reimbursements${query ? `?${query}` : ''}`;
   });
+
+  const { data: categoriesResponse } = useSWR<CategoriesResponse>('/categories?limit=100');
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -74,15 +86,21 @@ export default function ReimbursementsList() {
     setSearchParams(nextParams);
   };
 
-  const setSearch = (newSearch: string) => {
+  const updateFilters = (updates: Record<string, string>) => {
     const nextParams = new URLSearchParams(searchParams);
-    if (newSearch) {
-      nextParams.set('search', newSearch);
-    } else {
-      nextParams.delete('search');
-      nextParams.delete('page');
-    }
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        nextParams.set(key, value);
+      } else {
+        nextParams.delete(key);
+      }
+    });
+    nextParams.delete('page'); // Reset pagination on filter change
     setSearchParams(nextParams);
+  };
+
+  const setSearch = (newSearch: string) => {
+    updateFilters({ search: newSearch });
   };
 
   const handleEdit = (item: Reimbursement) => {
@@ -219,6 +237,16 @@ export default function ReimbursementsList() {
         totalItems={response?.pagination.total}
         searchValue={search}
         onSearchChange={setSearch}
+        extraHeader={
+          <ReimbursementFilters 
+            statusValue={statusFilter}
+            categoryValue={categoryFilter}
+            orderValue={order}
+            orderDirectionValue={orderDirection}
+            onFilterChange={updateFilters}
+            categories={categoriesResponse?.data || []}
+          />
+        }
       />
 
       <ConfirmActionDialog

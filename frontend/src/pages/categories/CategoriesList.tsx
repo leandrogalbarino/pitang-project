@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { api } from '@/lib/api-client';
 import { CategoryForm } from './components/CategoryForm';
@@ -10,25 +11,45 @@ import type { CategoriesResponse, Category } from '@/types/categoriesTypes';
 
 
 export default function CategoriesList() {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const page = Number(searchParams.get('page')) || 1;
+  const search = searchParams.get('search') || '';
   
-  const { data: response, mutate } = useSWR<CategoriesResponse>(`/categories?page=${page}`);
+  const { data: response, mutate } = useSWR<CategoriesResponse>(() => {
+    const params = new URLSearchParams();
+    if (page > 1) params.set('page', String(page));
+    if (search) params.set('search', search);
+    const query = params.toString();
+    return `/categories${query ? `?${query}` : ''}`;
+  });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-  const filteredCategories = useMemo(() => {
-    const allCategories = response?.data || [];
-    if (!search) return allCategories;
-    
-    const searchLower = search.toLowerCase();
-    return allCategories.filter(cat => 
-      cat.name.toLowerCase().includes(searchLower)
-    );
-  }, [response?.data, search]);
+  const setPage = (newPage: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (newPage <= 1) {
+      nextParams.delete('page');
+    } else {
+      nextParams.set('page', String(newPage));
+    }
+    setSearchParams(nextParams);
+  };
+
+  const setSearch = (newSearch: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (newSearch) {
+      nextParams.set('search', newSearch);
+      nextParams.delete('page'); // Reset to first page on search
+    } else {
+      nextParams.delete('search');
+      nextParams.delete('page');
+    }
+    setSearchParams(nextParams);
+  };
 
   const handleEdit = (category: Category) => {
     setSelectedCategory(category);
@@ -106,7 +127,7 @@ export default function CategoriesList() {
       </PageHeader>
 
       <CategoryTable 
-        categories={filteredCategories}
+        categories={response?.data || []}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
         // Pagination Props

@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { api } from '@/lib/api-client';
 import { UserTable } from './components/UserTable';
@@ -10,26 +11,46 @@ import { UserForm } from './components/UserForm';
 
 export default function UsersList() {
 
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Inicializa o estado a partir da URL ou valores padrão
+  const page = Number(searchParams.get('page')) || 1;
+  const search = searchParams.get('search') || '';
   
-  const { data: response, mutate } = useSWR<UsersListResponse>(`/users?page=${page}`);
+  const { data: response, mutate } = useSWR<UsersListResponse>(() => {
+    const params = new URLSearchParams();
+    if (page > 1) params.set('page', String(page));
+    if (search) params.set('search', search);
+    const query = params.toString();
+    return `/users${query ? `?${query}` : ''}`;
+  });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const filteredUsers = useMemo(() => {
-    const allUsers = response?.data || [];
-    if (!search) return allUsers;
-    
-    const searchLower = search.toLowerCase();
-    return allUsers.filter(user => 
-      user.name.toLowerCase().includes(searchLower) || 
-      user.email.toLowerCase().includes(searchLower)
-    );
-  }, [response?.data, search]);
+  const setPage = (newPage: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (newPage <= 1) {
+      nextParams.delete('page');
+    } else {
+      nextParams.set('page', String(newPage));
+    }
+    setSearchParams(nextParams);
+  };
+
+  const setSearch = (newSearch: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (newSearch) {
+      nextParams.set('search', newSearch);
+      nextParams.delete('page'); // Reset to first page on search
+    } else {
+      nextParams.delete('search');
+      nextParams.delete('page');
+    }
+    setSearchParams(nextParams);
+  };
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
@@ -106,7 +127,7 @@ export default function UsersList() {
       </PageHeader>
 
       <UserTable 
-        users={filteredUsers}
+        users={response?.data || []}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
         // Pagination Props

@@ -12,6 +12,7 @@ import {
   PaginationSchema,
 } from '../../schemas';
 import { getPagination, formatPaginatedResponse } from '../../utils/pagination';
+import type { User } from '../../../generated/prisma';
 
 export const createReimbursement = async (
   request: Request,
@@ -402,57 +403,63 @@ export const cancelReimbursement = async (
   }
 };
 
-/**
- * Lista as solicitações de reembolso com base no perfil do usuário.
- */
+const getReimbursementsClauses = (request: Request) => {
+  const user = request.user;
+  let whereClause: any = {};
+
+  // Filtros de Perfil (Base)
+  if (user.role === 'COLABORADOR') {
+    whereClause.userId = user.id;
+  } else if (user.role === 'GESTOR') {
+    whereClause.status = 'ENVIADO';
+  } else if (user.role === 'FINANCEIRO') {
+    whereClause.status = 'APROVADO';
+  }
+
+  const { search, category, status } = request.query;
+
+  if (status) {
+    whereClause.status = status;
+  }
+
+  if (search) {
+    whereClause.user = {
+      name: { contains: String(search), mode: 'insensitive' },
+    };
+  }
+
+  if (category) {
+    whereClause.category = {
+      name: { contains: String(category), mode: 'insensitive' },
+    };
+  }
+
+  return whereClause;
+};
+
+const getReimbursementsOrder = (request: Request) => {
+  const { order, orderDirection } = request.query;
+  let orderBy: any = {};
+  if (order === 'date') {
+    orderBy = {
+      createdAt: orderDirection ? orderDirection : 'desc',
+    };
+  }
+  if (order === 'amount') {
+    orderBy = {
+      amount: orderDirection ? orderDirection : 'desc',
+    };
+  }
+  return orderBy;
+};
+
 export const getReimbursements = async (
   request: Request,
   response: Response,
 ) => {
   try {
-    const user = request.user;
-    let whereClause = {};
-
-    // COLABORADOR vê apenas as suas
-    if (user.role === 'COLABORADOR') {
-      whereClause = { userId: user.id };
-    }
-    // GESTOR vê as enviadas
-    else if (user.role === 'GESTOR') {
-      whereClause = { status: { in: ['ENVIADO'] } };
-    }
-    // FINANCEIRO vê as aprovadas
-    else if (user.role === 'FINANCEIRO') {
-      whereClause = { status: { in: ['APROVADO'] } };
-    }
-    // ADMIN vê tudo
-
-    const { search } = request.query;
-
-    if (search) {
-      whereClause = {
-        AND: [
-          whereClause,
-          {
-            OR: [
-              {
-                description: { contains: String(search), mode: 'insensitive' },
-              },
-              {
-                category: {
-                  name: { contains: String(search), mode: 'insensitive' },
-                },
-              },
-              {
-                user: {
-                  name: { contains: String(search), mode: 'insensitive' },
-                },
-              },
-            ],
-          },
-        ],
-      };
-    }
+    const whereClause = getReimbursementsClauses(request);
+    const orderBy = getReimbursementsOrder(request);
 
     const validatedPagination = PaginationSchema.safeParse(request.query);
     const { page, limit } = validatedPagination.success
@@ -463,10 +470,10 @@ export const getReimbursements = async (
 
     const [total, result] = await Promise.all([
       prisma.reimbursementRequest.count({
-        where: { ...whereClause },
+        where: whereClause,
       }),
       prisma.reimbursementRequest.findMany({
-        where: { ...whereClause },
+        where: whereClause,
         include: {
           category: true,
           attachments: true,
@@ -476,9 +483,12 @@ export const getReimbursements = async (
         },
         skip,
         take,
-        orderBy: { createdAt: 'desc' },
+        orderBy:
+          Object.keys(orderBy).length > 0 ? orderBy : { createdAt: 'desc' },
       }),
     ]);
+
+    console.log(result);
 
     return res.successData(
       response,

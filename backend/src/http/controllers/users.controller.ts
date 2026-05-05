@@ -19,6 +19,7 @@ import { getPagination, formatPaginatedResponse } from '../../utils/pagination';
 import bcrypt from 'bcrypt';
 import { Prisma } from '../../../generated/prisma';
 import { environment } from '../../core/environmentEnv';
+import { captureRejectionSymbol } from 'node:stream';
 
 export const userLogin = async (request: Request, response: Response) => {
   try {
@@ -37,7 +38,7 @@ export const userLogin = async (request: Request, response: Response) => {
     });
 
     if (!user) {
-      return res.notFound404(response, 'Credenciais inválidas.');
+      return res.clientError400(response, 'Credenciais inválidas.');
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -128,11 +129,14 @@ export const userUpdate = async (request: Request, response: Response) => {
         'Não é possível atualizar dados de outro usuário.',
       );
     }
+
     const data = request.body;
     const validatedData =
       request.user?.id === userId
         ? UserUpdateSchema.safeParse(data)
         : UserAdminUpdateSchema.safeParse(data);
+
+    console.log(validatedData);
 
     if (!validatedData.success) {
       return res.handleValidationError(response, validatedData.error);
@@ -182,10 +186,27 @@ export const getUsers = async (request: Request, response: Response) => {
 
     const { skip, take } = getPagination(page, limit);
 
+    const { search } = request.query;
+    let whereClause: any = { active: true };
+
+    if (search) {
+      whereClause = {
+        AND: [
+          whereClause,
+          {
+            OR: [
+              { name: { contains: String(search), mode: 'insensitive' } },
+              { email: { contains: String(search), mode: 'insensitive' } },
+            ],
+          },
+        ],
+      };
+    }
+
     const [total, result] = await Promise.all([
-      prisma.user.count({ where: { active: true } }),
+      prisma.user.count({ where: whereClause }),
       prisma.user.findMany({
-        where: { active: true },
+        where: whereClause,
         skip,
         take,
         orderBy: { name: 'asc' },
