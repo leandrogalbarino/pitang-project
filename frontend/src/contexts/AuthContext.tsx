@@ -1,3 +1,4 @@
+import { validateToken } from '@/lib/auth-utils';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface UserPayload {
@@ -32,12 +33,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const storagedToken = localStorage.getItem('@Pitang:token');
 
     if (storagedUser && storagedToken) {
-      try {
+      const isValid = validateToken(storagedToken);
+      if (isValid) {
         setUser(JSON.parse(storagedUser));
-      } catch {
-        localStorage.removeItem('@Pitang:user');
+      } else {
         localStorage.removeItem('@Pitang:token');
-        setUser(null);
+        localStorage.removeItem('@Pitang:user');
       }
     }
     setLoading(false);
@@ -53,7 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem('@Pitang:token');
     localStorage.removeItem('@Pitang:user');
     setUser(null);
-    window.location.href = '/login';
   };
 
   return (

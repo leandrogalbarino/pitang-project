@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -14,6 +14,7 @@ import styles from './Layout.module.css';
 
 const Sidebar: React.FC = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'GESTOR', 'FINANCEIRO', 'COLABORADOR'] },
@@ -51,7 +52,13 @@ const Sidebar: React.FC = () => {
           <span className={styles.userName}>{user?.name}</span>
           <span className={styles.userRole}>{user?.role.toLowerCase()}</span>
         </div>
-        <button onClick={signOut} className={styles.logoutBtn}>
+        <button 
+          onClick={() => {
+            signOut();
+            navigate('/login');
+          }} 
+          className={styles.logoutBtn}
+        >
           <LogOut size={20} />
           Sair
         </button>

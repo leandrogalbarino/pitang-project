@@ -17,7 +17,7 @@ import { ConfirmActionDialog } from '@/components/dashboard/ConfirmActionDialog'
 import { api } from '@/lib/api-client';
 import { toast } from 'sonner';
 import type { UserPayload } from '@/contexts/AuthContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PATH_ROUTES } from '@/constants/routesConstants';
 
 interface SidebarProps {
@@ -27,6 +27,7 @@ interface SidebarProps {
 
 export function Sidebar({ user, signOut }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleProfileSuccess = () => {
@@ -48,6 +49,7 @@ export function Sidebar({ user, signOut }: SidebarProps) {
         description: 'Sua conta foi removida com sucesso. Até logo!',
       });
       signOut();
+      navigate(PATH_ROUTES.LOGIN);
     } catch (error) {
       console.error('Erro ao excluir conta', error);
       toast.error('Erro ao excluir conta', {
@@ -202,7 +204,10 @@ export function Sidebar({ user, signOut }: SidebarProps) {
         <Button
           variant="ghost"
           className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/5 rounded-lg"
-          onClick={signOut}
+          onClick={() => {
+            signOut();
+            navigate(PATH_ROUTES.LOGIN);
+          }}
         >
           <LogOut className="w-5 h-5 mr-3" />
           Sair da conta
