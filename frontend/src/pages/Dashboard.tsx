@@ -4,6 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { PATH_ROUTES } from '@/constants/routesConstants';
 
+function DashboardButton({
+  onClick,
+  buttonText,
+}: {
+  onClick: () => void;
+  buttonText: string;
+}) {
+  return (
+    <Button className="rounded-full" onClick={onClick}>
+      {buttonText}
+    </Button>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -23,49 +37,43 @@ export default function Dashboard() {
             <CardTitle>Ações Recomendadas</CardTitle>
           </CardHeader>
           <CardContent>
-            {user?.role === 'COLABORADOR' && (
-              <Button 
-                className="rounded-full"
-                onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS + '?new=true')}
-              >
-                Nova Solicitação
-              </Button>
-            )}
-            {user?.role === 'GESTOR' && (
-              <Button 
-                className="rounded-full"
-                onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS)}
-              >
-                Ver Pendências de Aprovação
-              </Button>
-            )}
-            {user?.role === 'FINANCEIRO' && (
-              <Button 
-                className="rounded-full"
-                onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS)}
-              >
-                Ver Pendências de Pagamento
-              </Button>
-            )}
+            <div className="flex flex-wrap gap-4">
+              {user?.role === 'COLABORADOR' && (
+                <DashboardButton
+                  onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS)}
+                  buttonText="Nova Solicitação"
+                />
+              )}
+              {user?.role === 'GESTOR' && (
+                <DashboardButton
+                  onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS)}
+                  buttonText="Ver Pendências de Aprovação"
+                />
+              )}
+              {user?.role === 'FINANCEIRO' && (
+                <DashboardButton
+                  onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS)}
+                  buttonText="Ver Pendências de Pagamento"
+                />
+              )}
 
-            {user?.role === 'ADMIN' && (
-              <div className="flex gap-4">
-                <Button 
-                  variant="outline" 
-                  className="rounded-full"
-                  onClick={() => navigate(PATH_ROUTES.USERS)}
-                >
-                  Gerenciar Usuários
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="rounded-full"
-                  onClick={() => navigate(PATH_ROUTES.CATEGORIES)}
-                >
-                  Gerenciar Categorias
-                </Button>
-              </div>
-            )}
+              {user?.role === 'ADMIN' && (
+                <>
+                  <DashboardButton
+                    onClick={() => navigate(PATH_ROUTES.REIMBURSEMENTS)}
+                    buttonText="Visualizar Solicitações de Reembolso"
+                  />
+                  <DashboardButton
+                    onClick={() => navigate(PATH_ROUTES.USERS)}
+                    buttonText="Gerenciar Usuários"
+                  />
+                  <DashboardButton
+                    onClick={() => navigate(PATH_ROUTES.CATEGORIES)}
+                    buttonText="Gerenciar Categorias"
+                  />
+                </>
+              )}
+            </div>
           </CardContent>
         </Card>
       </section>
