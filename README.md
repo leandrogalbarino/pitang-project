@@ -21,7 +21,7 @@ Siga os passos abaixo para subir o ambiente de desenvolvimento:
 ### 1. Clonar o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/pitang-project.git
+git clone https://github.com/leandrogalbarino/pitang-project.git
 cd pitang-project
 ```
 
@@ -38,7 +38,7 @@ HTTP_PORT=3000
 ### 3. Instalar Dependências
 
 ```bash
-bun install
+bun run install:all
 ```
 
 ### 4. Subir o Banco de Dados (Docker)
