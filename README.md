@@ -38,7 +38,7 @@ HTTP_PORT=3000
 ### 3. Instalar Dependências
 
 ```bash
-bun install
+bun run install:all
 ```
 
 ### 4. Subir o Banco de Dados (Docker)
