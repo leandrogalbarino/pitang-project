@@ -72,8 +72,46 @@ Após rodar o comando de inicialização, você pode acessar o sistema com os se
 
 ---
 
-## Tecnologias Utilizadas
+## 🧪 Testes Automatizados
 
-- **Frontend**: React, Vite, TailwindCSS, TanStack Router, SWR.
-- **Backend**: Node.js/Bun, Express, Prisma ORM.
+.
+
+### Rodar todos os testes (Fullstack)
+
+Na raiz do projeto:
+
+```bash
+bun run test:all
+```
+
+### Backend
+
+Utiliza **Bun Test** para testes de integração de API.
+
+```bash
+cd backend
+bun test:setup  # Prepara o banco de teste
+bun test        # Executa todos os testes de integração
+```
+
+### Frontend
+
+Utiliza **Vitest** + **React Testing Library** para testes de componentes e RBAC.
+
+```bash
+cd frontend
+bun run test
+```
+
+---
+
+### Extras
+
+O sistema envia uma **mensagem** para o  [ntfy](https://ntfy.sh/pitang_reimbursements_notifications) sempre que uma solicitação for criada ou atualizada.
+
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Frontend**: React, Vite, TailwindCSS, TanStack Router, SWR, Vitest.
+- **Backend**: Node.js/Bun, Express, Prisma ORM, Bun Test.
 - **Infra**: Docker, PostgreSQL.
