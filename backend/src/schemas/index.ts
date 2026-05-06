@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -45,6 +45,7 @@ export const UserRegistrationSchema = z
       .min(3, 'A senha precisa ter pelo menos 3 caracteres.'),
     name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres.'),
     role: RoleEnum.default('COLABORADOR'),
+    active: z.boolean().default(true),
   })
   .refine((data) => data.password === data.password2, {
     message: 'As senhas não são iguais.',
@@ -55,8 +56,8 @@ export const UserResponseSchema = z.object({
   id: z.uuid(),
   name: z.string(),
   email: z.email(),
-  role: RoleEnum,
   active: z.boolean(),
+  role: RoleEnum,
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -64,6 +65,7 @@ export const UserResponseSchema = z.object({
 export const UserAdminUpdateSchema = z
   .object({
     role: RoleEnum.optional(),
+    active: z.boolean(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Pelo menos um campo deve ser fornecido para atualização.',
@@ -148,16 +150,19 @@ export const ReimbursementRequestSchema = z.object(
     amount: z
       .number('Insira o valor.')
       .positive('O valor deve ser maior que zero.'),
-    expenseDate: z.string().min(1, 'A data da despesa é obrigatória.').refine(
-      (dateStr) => {
-        const now = dayjs().tz('America/Sao_Paulo').startOf('day');
-        const inputDate = dayjs(dateStr).startOf('day');
-        return !inputDate.isAfter(now);
-      },
-      {
-        message: 'Não é possível colocar uma data posterior a atual',
-      },
-    ),
+    expenseDate: z
+      .string()
+      .min(1, 'A data da despesa é obrigatória.')
+      .refine(
+        (dateStr) => {
+          const now = dayjs().tz('America/Sao_Paulo').startOf('day');
+          const inputDate = dayjs(dateStr).startOf('day');
+          return !inputDate.isAfter(now);
+        },
+        {
+          message: 'Não é possível colocar uma data posterior a atual',
+        },
+      ),
     categoryId: z.uuid('ID de categoria inválido.'),
   },
   {
@@ -169,7 +174,8 @@ export const ReimbursementUpdateSchema = z.object(
   {
     description: z.string().min(5).optional(),
     amount: z.number().positive().optional(),
-    expenseDate: z.string()
+    expenseDate: z
+      .string()
       .refine(
         (dateStr) => {
           if (!dateStr) return true;

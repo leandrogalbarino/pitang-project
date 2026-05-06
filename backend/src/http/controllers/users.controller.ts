@@ -19,7 +19,6 @@ import { getPagination, formatPaginatedResponse } from '../../utils/pagination';
 import bcrypt from 'bcrypt';
 import { Prisma } from '../../../generated/prisma';
 import { environment } from '../../core/environmentEnv';
-import { captureRejectionSymbol } from 'node:stream';
 
 export const userLogin = async (request: Request, response: Response) => {
   try {
@@ -76,9 +75,12 @@ export const userRegister = async (request: Request, response: Response) => {
     });
 
     if (existUserInDB) {
-      return res.clientError400(
+      return res.clientErrorConflict409(
         response,
         'Usuário com este email já cadastrado.',
+        {
+          email: ['Já existe um usuário com este email cadastrado.'],
+        },
       );
     }
 
@@ -137,6 +139,7 @@ export const userUpdate = async (request: Request, response: Response) => {
     }
 
     const data = request.body;
+
     const validatedData =
       request.user?.id === userId
         ? UserUpdateSchema.safeParse(data)
@@ -155,7 +158,7 @@ export const userUpdate = async (request: Request, response: Response) => {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: userId, active: true },
+      where: {id: userId},
       data: updatePayload,
     });
 
@@ -191,7 +194,7 @@ export const getUsers = async (request: Request, response: Response) => {
     const { skip, take } = getPagination(page, limit);
 
     const { search } = request.query;
-    let whereClause: any = { active: true };
+    let whereClause: any = {};
 
     if (search) {
       whereClause = {
@@ -213,7 +216,7 @@ export const getUsers = async (request: Request, response: Response) => {
         where: whereClause,
         skip,
         take,
-        orderBy: { name: 'asc' },
+        orderBy: [{ active: 'desc' }, { name: 'asc' }],
       }),
     ]);
 

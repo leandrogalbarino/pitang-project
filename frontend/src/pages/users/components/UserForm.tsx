@@ -37,6 +37,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
       role: 'COLABORADOR',
       password: '',
       password2: '',
+      active: true,
     },
   });
 
@@ -46,6 +47,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
       name: user ? user.name : '',
       email: user ? user.email : '',
       role: user ? user.role : 'COLABORADOR',
+      active: user ? user.active : true,
       password: '',
       password2: '',
     });
@@ -143,7 +145,19 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
         <SelectItem value="FINANCEIRO">Financeiro</SelectItem>
         <SelectItem value="ADMIN">Administrador</SelectItem>
       </SelectGroup>
-
+      {loggedInUser?.role === 'ADMIN' && user && !isSelf && !user?.active && (
+        <SelectGroup
+          label="Status da Conta"
+          name="active"
+          control={control}
+          error={errors.active}
+          disabled={isSelf}
+          placeholder="Selecione o status"
+        >
+          <SelectItem value="true">Ativo</SelectItem>
+          <SelectItem value="false">Inativo</SelectItem>
+        </SelectGroup>
+      )}
       <InputGroup
         label={user ? 'Nova Senha (deixe em branco para manter)' : 'Senha'}
         id="password"
