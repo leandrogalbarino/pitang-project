@@ -86,7 +86,7 @@ export const userRegister = async (request: Request, response: Response) => {
     const saltRounds = 10;
     const passwordHashed = await bcrypt.hash(password, saltRounds);
 
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         ...userToSave,
         password: passwordHashed,
@@ -94,7 +94,13 @@ export const userRegister = async (request: Request, response: Response) => {
       },
     });
 
-    return res.successCreated(response, 'Usuário registrado com sucesso.');
+    const userResponse = UserResponseSchema.parse(newUser);
+
+    return res.successCreated(
+      response,
+      'Usuário registrado com sucesso.',
+      userResponse,
+    );
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
@@ -135,8 +141,6 @@ export const userUpdate = async (request: Request, response: Response) => {
       request.user?.id === userId
         ? UserUpdateSchema.safeParse(data)
         : UserAdminUpdateSchema.safeParse(data);
-
-    console.log(validatedData);
 
     if (!validatedData.success) {
       return res.handleValidationError(response, validatedData.error);

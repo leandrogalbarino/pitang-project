@@ -5,12 +5,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from './select';
-import { Controller, type FieldError, type Control } from 'react-hook-form';
+import { Controller, type FieldError } from 'react-hook-form';
 
 interface SelectGroupProps {
   label: string;
   name: string;
-  control: Control<any>;
+  control: any;
   placeholder?: string;
   error?: FieldError;
   disabled?: boolean;

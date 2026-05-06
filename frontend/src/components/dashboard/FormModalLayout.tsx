@@ -6,7 +6,7 @@ interface FormModalLayoutProps {
   title: string;
   description: string;
   onCancel: () => void;
-  onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  onSubmit: (e?: React.BaseSyntheticEvent) => any;
   isSubmitting: boolean;
   submitLabel?: string;
   cancelLabel?: string;

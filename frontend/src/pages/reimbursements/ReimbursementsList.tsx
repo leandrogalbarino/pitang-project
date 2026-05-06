@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
-import { api } from '@/lib/api-client';
+import { api, type ApiError } from '@/lib/api-client';
 import { ReimbursementTable } from './components/ReimbursementTable';
 import { ConfirmActionDialog } from '@/components/dashboard/ConfirmActionDialog';
 import { toast } from 'sonner';
@@ -147,12 +147,14 @@ export default function ReimbursementsList() {
         description: messagesSuccess[confirmType],
       });
     } catch (error) {
-      console.error(`Erro ao executar ${confirmType}`, error);
+      const apiError = error as ApiError;
+      console.error(`Erro ao executar ${confirmType}`, apiError);
       toast.error('Erro na operação', {
-        description: 'Não foi possível concluir a ação. Tente novamente.',
+        description: apiError.message || 'Não foi possível concluir a ação. Tente novamente.',
       });
     } finally {
       setIsProcessing(false);
+      setIsConfirmOpen(false); // Fecha o popup mesmo em erro
       setSelectedItem(null);
       setConfirmType(null);
     }
@@ -176,6 +178,7 @@ export default function ReimbursementsList() {
       toast.error('Erro ao rejeitar', {
         description: 'Não foi possível rejeitar a solicitação.',
       });
+      setIsRejectOpen(false); // Fecha o popup mesmo em erro
     } finally {
       setSelectedItem(null);
     }
@@ -209,7 +212,7 @@ export default function ReimbursementsList() {
         description="Acompanhe e gerencie as solicitações de reembolso de despesas."
         buttonDisabled={user?.role === 'COLABORADOR' ? false : true}
         buttonLabel={
-          user?.role === 'COLABORADOR' ? 'Nova Solicitação' : undefined
+          user?.role === 'COLABORADOR' ? 'Nova Solicitação' : ''
         }
         isFormOpen={isFormOpen}
         onOpenChange={setIsFormOpen}

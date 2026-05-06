@@ -1,10 +1,10 @@
 import { SelectItem } from '@/components/ui/select';
 import { SelectGroup } from '@/components/ui/SelectGroup';
 import type { Category } from '@/types/categoriesTypes';
-import type { Control, FieldError } from 'react-hook-form';
+import type { FieldError } from 'react-hook-form';
 
 interface CategorySelectProps {
-  control: Control<any>;
+  control: any;
   categories: Category[];
   error?: FieldError;
   disabled?: boolean;

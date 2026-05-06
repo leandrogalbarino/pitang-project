@@ -75,7 +75,7 @@ export function ReimbursementTable({
           {reimbursements.map((item) => (
             <TableRow key={item.id} className="border-slate-50">
               <TableCell className="font-medium text-slate-900">
-                {item.user.name}
+                {item.user?.name || 'Desconhecido'}
               </TableCell>
               <TableCell className="text-slate-500">
                 {item.category?.name || 'Sem categoria'}

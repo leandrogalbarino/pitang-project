@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useSWR from 'swr';
 import { api, type ApiError } from '@/lib/api-client';
@@ -41,7 +41,7 @@ export function ReimbursementForm({
     '/categories?limit=100',
   );
 
-  const initialValues = {
+  const initialValues: ReimbursementFormData = {
     categoryId: '',
     description: '',
     amount: 0,
@@ -73,7 +73,7 @@ export function ReimbursementForm({
     }
   }, [reimbursement, reset]);
 
-  const onSubmit = async (data: ReimbursementFormData) => {
+  const onSubmit: SubmitHandler<ReimbursementFormData> = async (data) => {
     try {
       setIsSubmitting(true);
 
@@ -82,7 +82,8 @@ export function ReimbursementForm({
       if (isEditing) {
         await api.put(`/reimbursements/${reimbursementId}`, data);
       } else {
-        const response: any = await api.post('/reimbursements', data);
+        const response: any = await api.post('/reimbursements', data); 
+        
         reimbursementId = response.id;
       }
 
@@ -153,7 +154,7 @@ export function ReimbursementForm({
           id="amount"
           type="number"
           placeholder="0.00"
-          registration={register('amount')}
+          registration={register('amount', { valueAsNumber: true })}
           error={errors.amount}
         />
 
