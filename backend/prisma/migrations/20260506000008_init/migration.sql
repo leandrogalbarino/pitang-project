@@ -10,12 +10,13 @@ CREATE TYPE "HistoryAction" AS ENUM ('CREATED', 'UPDATED', 'SUBMITTED', 'APPROVE
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'COLABORADOR',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -24,6 +25,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "amountMax" DOUBLE PRECISION,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -34,13 +36,13 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "ReimbursementRequest" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "categoryId" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "expenseDate" TIMESTAMP(3) NOT NULL,
     "status" "RequestStatus" NOT NULL DEFAULT 'RASCUNHO',
     "rejectionDescription" TEXT,
-    "userId" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -50,10 +52,10 @@ CREATE TABLE "ReimbursementRequest" (
 -- CreateTable
 CREATE TABLE "Attachment" (
     "id" TEXT NOT NULL,
+    "requestId" TEXT NOT NULL,
     "fileName" TEXT NOT NULL,
     "fileUrl" TEXT NOT NULL,
     "fileType" TEXT NOT NULL,
-    "requestId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
@@ -62,10 +64,10 @@ CREATE TABLE "Attachment" (
 -- CreateTable
 CREATE TABLE "RequestHistory" (
     "id" TEXT NOT NULL,
-    "action" "HistoryAction" NOT NULL,
-    "observation" TEXT,
     "requestId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "action" "HistoryAction" NOT NULL,
+    "observation" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "RequestHistory_pkey" PRIMARY KEY ("id")
