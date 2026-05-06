@@ -7,8 +7,6 @@ import {
   approveReimbursement,
   cancelReimbursement,
   createReimbursement,
-  deleteAttachment,
-  getAttachments,
   getReimbursements,
   getRequestHistory,
   getSingleReimbursement,
@@ -17,6 +15,7 @@ import {
   submitReimbursement,
   updateReimbursement,
 } from '../controllers/reimbursements.controller';
+import { deleteAttachment, getAttachments } from '../controllers/attachment.controller';
 
 const reimbursementsRoutes = express.Router();
 
