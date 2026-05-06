@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api, type ApiError } from '@/lib/api-client';
 import type { CategoryFormProps } from '@/types/categoriesTypes';
-import { categorySchema, type CategoryFormData } from '@/schemas/categorySchema';
+import {
+  categorySchema,
+  type CategoryFormData,
+} from '@/schemas/categorySchema';
 import { toast } from 'sonner';
 import { FormModalLayout } from '@/components/dashboard/FormModalLayout';
 import { handleApiErrors } from '@/lib/form-utils';
@@ -26,7 +29,8 @@ export function CategoryForm({
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      name: '',
+      name: category?.name || '',
+      amountMax: category?.amountMax || 0,
     },
   });
 
@@ -40,7 +44,7 @@ export function CategoryForm({
     };
   }, [category, reset, clearErrors]);
 
-  const onSubmit = async (data: CategoryFormData) => {
+  const onSubmit: SubmitHandler<CategoryFormData> = async (data) => {
     try {
       setIsSubmitting(true);
 
@@ -49,7 +53,7 @@ export function CategoryForm({
         onSuccess();
         return;
       }
-      
+
       await api.post('/categories', data);
       onSuccess();
     } catch (error) {
@@ -73,7 +77,7 @@ export function CategoryForm({
       onCancel={onCancel}
       onSubmit={handleSubmit(onSubmit)}
       isSubmitting={isSubmitting}
-      submitLabel={category ? "Salvar Categoria" : "Criar Categoria"}
+      submitLabel={category ? 'Salvar Categoria' : 'Criar Categoria'}
       maxWidth="sm:max-w-[425px]"
     >
       <InputGroup
@@ -83,6 +87,14 @@ export function CategoryForm({
         registration={register('name')}
         error={errors.name}
         autoFocus
+      />
+      <InputGroup
+        label="Valor Máximo (R$)"
+        id="amountMax"
+        type="number"
+        placeholder="0.00"
+        registration={register('amountMax', { valueAsNumber: true })}
+        error={errors.amountMax}
       />
     </FormModalLayout>
   );

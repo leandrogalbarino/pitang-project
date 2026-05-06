@@ -1,6 +1,7 @@
 export interface Category {
   id: string;
   name: string;
+  amountMax: number;
   active: boolean;
 }
 

@@ -9,17 +9,20 @@ const createCategories = async () => {
     console.log('Iniciando seed...');
 
     const categories = [
-      { name: 'Alimentação' },
-      { name: 'Transporte' },
-      { name: 'Hospedagem' },
-      { name: 'Outros' },
+      { name: 'Alimentação', amountMax: 500 },
+      { name: 'Transporte', amountMax: 300 },
+      { name: 'Hospedagem', amountMax: 2000 },
+      { name: 'Outros', amountMax: 1000 },
     ];
 
     for (const cat of categories) {
       await prisma.category.upsert({
         where: { name: cat.name },
-        update: {},
-        create: { name: cat.name },
+        update: { amountMax: cat.amountMax },
+        create: { 
+          name: cat.name,
+          amountMax: cat.amountMax
+        },
       });
     }
     console.log('Categorias criadas.');

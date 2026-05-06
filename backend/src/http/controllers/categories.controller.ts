@@ -60,7 +60,7 @@ export const createCategory = async (request: Request, response: Response) => {
       return res.handleValidationError(response, validatedData.error);
     }
 
-    const { name, active } = validatedData.data;
+    const { name, active, amountMax } = validatedData.data;
 
     // Verificar se já existe
     const existing = await prisma.category.findFirst({
@@ -68,13 +68,17 @@ export const createCategory = async (request: Request, response: Response) => {
     });
 
     if (existing) {
-      return res.clientErrorConflict409(response, 'Já existe uma categoria com este nome.', {
-        name: ['Já existe uma categoria com este nome.'],
-      });
+      return res.clientErrorConflict409(
+        response,
+        'Já existe uma categoria com este nome.',
+        {
+          name: ['Já existe uma categoria com este nome.'],
+        },
+      );
     }
 
     await prisma.category.create({
-      data: { name, active },
+      data: validatedData.data,
     });
 
     return res.successCreated(response, 'Categoria criada com sucesso.');
@@ -94,7 +98,7 @@ export const updateCategory = async (request: Request, response: Response) => {
       return res.clientError400(response, 'ID inválido.');
     }
 
-    const validatedData = CategorySchema.partial().safeParse(request.body);
+    const validatedData = CategorySchema.safeParse(request.body);
     if (!validatedData.success) {
       return res.handleValidationError(response, validatedData.error);
     }
@@ -110,16 +114,20 @@ export const updateCategory = async (request: Request, response: Response) => {
     // Correção: Ignora o ID atual para permitir atualização de status sem conflito de nome
     if (validatedData.data.name) {
       const existing = await prisma.category.findFirst({
-        where: { 
+        where: {
           name: validatedData.data.name,
-          NOT: { id: validatedId.data.id }
+          NOT: { id: validatedId.data.id },
         },
       });
 
       if (existing) {
-        return res.clientErrorConflict409(response, 'Já existe uma categoria com este nome.', {
-          name: ['Já existe uma categoria com este nome.'],
-        });
+        return res.clientErrorConflict409(
+          response,
+          'Já existe uma categoria com este nome.',
+          {
+            name: ['Já existe uma categoria com este nome.'],
+          },
+        );
       }
     }
 
