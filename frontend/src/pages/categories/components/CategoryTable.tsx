@@ -11,6 +11,7 @@ import { TableActions } from '@/components/dashboard/TableActions';
 import { TableContainer } from '@/components/dashboard/TableContainer';
 import { StatusBadge } from '@/components/dashboard/StatusBadge';
 import type { CategoryTableProps } from '@/types/categoriesTypes';
+import { formatCurrency } from '@/lib/utils';
 
 export function CategoryTable({
   categories,
@@ -38,6 +39,7 @@ export function CategoryTable({
           <TableRow className="hover:bg-transparent border-slate-50">
             <TableHead className="w-[400px]">Nome</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Valor Máximo</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -51,6 +53,7 @@ export function CategoryTable({
               <TableCell>
                 <StatusBadge active={category.active} />
               </TableCell>
+              <TableCell>{formatCurrency(category.amountMax)}</TableCell>
               <TableActions
                 onEdit={() => onEdit(category)}
                 onDelete={() => onDelete(category)}
