@@ -12,6 +12,7 @@ import { TableContainer } from '@/components/dashboard/TableContainer';
 import { ReimbursementStatusBadge } from '../../../components/dashboard/reimbursements/ReimbursementStatusBadge';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { ReimbursementTableActions } from './ReimbursementTableActions';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ReimbursementTableProps {
   reimbursements: Reimbursement[];
@@ -48,9 +49,15 @@ export function ReimbursementTable({
   totalItems,
   extraHeader,
 }: ReimbursementTableProps) {
+  const { user } = useAuth();
+
   return (
     <TableContainer
-      searchPlaceholder="Buscar por colaborador..."
+      searchPlaceholder={
+        user?.role === 'COLABORADOR'
+          ? 'Buscar por descrição...'
+          : 'Buscar por colaborador...'
+      }
       searchValue={searchValue}
       onSearchChange={onSearchChange}
       currentPage={currentPage}
@@ -62,7 +69,9 @@ export function ReimbursementTable({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-slate-50">
-            <TableHead>Colaborador</TableHead>
+            <TableHead>
+              {user?.role === 'COLABORADOR' ? 'Descrição' : 'Colaborador'}
+            </TableHead>
             <TableHead>Categoria</TableHead>
             <TableHead>Data</TableHead>
             <TableHead>Valor</TableHead>
@@ -74,8 +83,10 @@ export function ReimbursementTable({
         <TableBody>
           {reimbursements.map((item) => (
             <TableRow key={item.id} className="border-slate-50">
-              <TableCell className="font-medium text-slate-900">
-                {item.user?.name || 'Desconhecido'}
+              <TableCell className="font-medium text-slate-900 max-w-[200px] truncate">
+                {(user?.role === 'COLABORADOR'
+                  ? item.description
+                  : item.user?.name) || 'Desconhecido'}
               </TableCell>
               <TableCell className="text-slate-500">
                 {item.category?.name || 'Sem categoria'}
@@ -90,7 +101,7 @@ export function ReimbursementTable({
                 <ReimbursementStatusBadge status={item.status} />
               </TableCell>
               <TableCell className="text-right">
-                <ReimbursementTableActions 
+                <ReimbursementTableActions
                   item={item}
                   onEdit={onEdit}
                   onCancel={onCancel}
@@ -111,4 +122,3 @@ export function ReimbursementTable({
     </TableContainer>
   );
 }
-

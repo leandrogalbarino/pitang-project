@@ -484,9 +484,13 @@ const getReimbursementsClauses = (request: Request) => {
   }
 
   if (search) {
-    whereClause.user = {
-      name: { contains: String(search), mode: 'insensitive' },
-    };
+    if (user.role === 'COLABORADOR') {
+      whereClause.description = { contains: String(search), mode: 'insensitive' };
+    } else {
+      whereClause.user = {
+        name: { contains: String(search), mode: 'insensitive' },
+      };
+    }
   }
 
   if (category) {
