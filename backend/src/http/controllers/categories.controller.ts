@@ -1,7 +1,11 @@
 import type { Request, Response } from 'express';
 import { prisma } from '../../core/prismaClient';
 import * as res from '../../utils/responseHttp';
-import { CategorySchema, uuidParam, PaginationSchema } from '../../schemas';
+import {
+  CategorySchema,
+  uuidParam,
+  PaginationSchema,
+} from '../../schemas';
 import { getPagination, formatPaginatedResponse } from '../../utils/pagination';
 
 /**

@@ -28,7 +28,7 @@ if (!dbNameMatch) {
 const dbName = dbNameMatch[1];
 
 async function setup() {
-  console.log(`🚀 Iniciando configuração do banco de teste: ${dbName}`);
+  console.log(`Iniciando configuração do banco de teste: ${dbName}`);
 
   // Conectar ao banco 'postgres' padrão para criar o novo banco
   // Removemos o nome do banco da URL para conectar ao admin

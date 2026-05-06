@@ -485,7 +485,10 @@ const getReimbursementsClauses = (request: Request) => {
 
   if (search) {
     if (user.role === 'COLABORADOR') {
-      whereClause.description = { contains: String(search), mode: 'insensitive' };
+      whereClause.description = {
+        contains: String(search),
+        mode: 'insensitive',
+      };
     } else {
       whereClause.user = {
         name: { contains: String(search), mode: 'insensitive' },

@@ -64,7 +64,9 @@ export default function ReimbursementsList() {
     return `/reimbursements${query ? `?${query}` : ''}`;
   });
 
-  const { data: categoriesResponse } = useSWR<CategoriesResponse>('/categories?limit=100');
+  const { data: categoriesResponse } = useSWR<CategoriesResponse>(
+    '/categories?limit=100',
+  );
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -150,7 +152,9 @@ export default function ReimbursementsList() {
       const apiError = error as ApiError;
       console.error(`Erro ao executar ${confirmType}`, apiError);
       toast.error('Erro na operação', {
-        description: apiError.message || 'Não foi possível concluir a ação. Tente novamente.',
+        description:
+          apiError.message ||
+          'Não foi possível concluir a ação. Tente novamente.',
       });
     } finally {
       setIsProcessing(false);
@@ -211,9 +215,7 @@ export default function ReimbursementsList() {
         title="Solicitações de Reembolso"
         description="Acompanhe e gerencie as solicitações de reembolso de despesas."
         buttonDisabled={user?.role === 'COLABORADOR' ? false : true}
-        buttonLabel={
-          user?.role === 'COLABORADOR' ? 'Nova Solicitação' : ''
-        }
+        buttonLabel={user?.role === 'COLABORADOR' ? 'Nova Solicitação' : ''}
         isFormOpen={isFormOpen}
         onOpenChange={setIsFormOpen}
         onAddNew={handleAddNew}
@@ -241,7 +243,7 @@ export default function ReimbursementsList() {
         searchValue={search}
         onSearchChange={setSearch}
         extraHeader={
-          <ReimbursementFilters 
+          <ReimbursementFilters
             statusValue={statusFilter}
             categoryValue={categoryFilter}
             orderValue={order}

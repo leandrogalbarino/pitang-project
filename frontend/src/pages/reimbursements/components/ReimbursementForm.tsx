@@ -82,8 +82,8 @@ export function ReimbursementForm({
       if (isEditing) {
         await api.put(`/reimbursements/${reimbursementId}`, data);
       } else {
-        const response: any = await api.post('/reimbursements', data); 
-        
+        const response: any = await api.post('/reimbursements', data);
+
         reimbursementId = response.id;
       }
 
@@ -112,8 +112,12 @@ export function ReimbursementForm({
     if (!reimbursement) return;
 
     try {
-      await api.delete(`/reimbursements/${reimbursement.id}/attachments/${attachmentId}`);
-      setExistingAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+      await api.delete(
+        `/reimbursements/${reimbursement.id}/attachments/${attachmentId}`,
+      );
+      setExistingAttachments((prev) =>
+        prev.filter((a) => a.id !== attachmentId),
+      );
       toast.success('Anexo removido');
     } catch (error) {
       console.error('Erro ao deletar anexo:', error);

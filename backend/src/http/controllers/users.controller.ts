@@ -158,7 +158,7 @@ export const userUpdate = async (request: Request, response: Response) => {
     }
 
     const updatedUser = await prisma.user.update({
-      where: {id: userId},
+      where: { id: userId },
       data: updatePayload,
     });
 

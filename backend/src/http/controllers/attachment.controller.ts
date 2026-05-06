@@ -6,7 +6,6 @@ import { sendNotification } from '../../utils/notifications';
 import fs from 'fs';
 import path from 'path';
 
-
 /**
  * Lista os anexos de uma solicitação específica.
  */
@@ -108,7 +107,7 @@ export const deleteAttachment = async (
 
     sendNotification(
       'Anexo Removido',
-      `O colaborador ${request.user.name} removeu um anexo da solicitação #${validatedId.data.id.split('-')[0]}.`
+      `O colaborador ${request.user.name} removeu um anexo da solicitação #${validatedId.data.id.split('-')[0]}.`,
     );
 
     // Remover arquivo físico do disco
