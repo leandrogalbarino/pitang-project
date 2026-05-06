@@ -28,16 +28,16 @@ describe('Auth Endpoints', () => {
     });
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token');
+    expect(res.body.data).toHaveProperty('token');
   });
 
-  it('Deve retornar 404 para usuário inexistente', async () => {
+  it('Deve retornar 400 para usuário inexistente', async () => {
     const res = await request(app).post('/auth/login').send({
       email: 'errado@exemplo.com',
       password: 'password123',
     });
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(400);
     expect(res.body.message).toBe('Credenciais inválidas.');
   });
 });
