@@ -38,7 +38,6 @@ export const createReimbursement = async (
     if (!category) {
       return res.notFound404(response, 'Categoria não encontrada.');
     }
-
     if (validatedData.data.amount > category.amountMax) {
       return res.clientFieldsError400(response, {
         amount: [
@@ -122,14 +121,23 @@ export const updateReimbursement = async (
     }
 
     // Verificar se a categoria existe e está ativa
-    if (validatedData.data.categoryId) {
-      const category = await prisma.category.findFirst({
-        where: { id: validatedData.data.categoryId, active: true },
-      });
+    const category = await prisma.category.findFirst({
+      where: { id: validatedData.data.categoryId, active: true },
+    });
 
-      if (!category) {
-        return res.notFound404(response, 'Categoria não encontrada.');
-      }
+    if (!category) {
+      return res.notFound404(
+        response,
+        'Categoria não encontrada ou está inativa.',
+      );
+    }
+
+    if (validatedData.data.amount > category.amountMax) {
+      return res.clientFieldsError400(response, {
+        amount: [
+          `Valor máximo permitido na categoria ${category.name}: R$ ${category.amountMax}.00`,
+        ],
+      });
     }
 
     const updateData = {
@@ -195,7 +203,7 @@ export const submitReimbursement = async (
     if (reimbursement.amount > 150 && reimbursement._count.attachments === 0) {
       return res.clientError400(
         response,
-        'É necessário anexar pelo menos um comprovante para enviar a solicitação.',
+        'É necessário anexar pelo menos um comprovante para enviar uma solicitação com valor acima de R$ 150,00.',
       );
     }
 

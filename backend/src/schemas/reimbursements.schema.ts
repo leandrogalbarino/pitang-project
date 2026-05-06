@@ -6,7 +6,6 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-
 export const RequestStatusEnum = z.enum([
   'RASCUNHO',
   'ENVIADO',
@@ -56,11 +55,9 @@ export const ReimbursementRequestSchema = z.object(
 
 export const ReimbursementUpdateSchema = z.object(
   {
-    description: z.string().min(5).optional(),
-    amount: z.number().positive().optional(),
-    expenseDate: z
-      .string()
-      .refine(
+    description: z.string().min(5),
+    amount: z.number().positive(),
+    expenseDate: z.string().refine(
         (dateStr) => {
           if (!dateStr) return true;
           const now = dayjs().tz('America/Sao_Paulo').startOf('day');
@@ -70,9 +67,8 @@ export const ReimbursementUpdateSchema = z.object(
         {
           message: 'Não é possível colocar uma data posterior a atual',
         },
-      )
-      .optional(),
-    categoryId: z.uuid('Id inválido.').optional(),
+    ),
+    categoryId: z.uuid('Id inválido.'),
   },
   {
     message: 'Insira os campos necessários.',
@@ -102,5 +98,3 @@ export const RequestResponseSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
-
-
