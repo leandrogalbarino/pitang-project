@@ -492,7 +492,12 @@ describe('Reimbursement Flow', () => {
       const res = await request(app)
         .put(`/reimbursements/${reimbursement.id}`)
         .set('Authorization', `Bearer ${colaboradorToken}`)
-        .send({ description: 'New Desc', amount: 99 });
+        .send({ 
+          description: 'New Desc', 
+          amount: 99,
+          expenseDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+          categoryId: categoryId
+        });
 
       expect(res.status).toBe(200);
       expect(res.body.data.description).toBe('New Desc');

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import UsersList from '@/pages/users/UsersList';
 import { BrowserRouter } from 'react-router-dom';
@@ -44,5 +44,16 @@ describe('UsersList Page', () => {
   it('Deve mostrar o botão de Novo Usuário', () => {
     renderUsers();
     expect(screen.getByText(/Novo Usuário/i)).toBeInTheDocument();
+  });
+
+  it('Deve abrir o formulário ao clicar em Novo Usuário', async () => {
+    renderUsers();
+    const addButton = screen.getByText(/Novo Usuário/i);
+    
+    fireEvent.click(addButton);
+    
+    expect(screen.getByText(/Adicione um novo usuário ao sistema/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Nome Completo/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
   });
 });

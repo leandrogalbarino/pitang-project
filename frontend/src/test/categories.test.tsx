@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import CategoriesList from '@/pages/categories/CategoriesList';
 import { BrowserRouter } from 'react-router-dom';
@@ -44,5 +44,16 @@ describe('CategoriesList Page', () => {
   it('Deve mostrar o botão de Nova Categoria', () => {
     renderCategories();
     expect(screen.getByText(/Nova Categoria/i)).toBeInTheDocument();
+  });
+
+  it('Deve abrir o formulário ao clicar em Nova Categoria', () => {
+    renderCategories();
+    const addButton = screen.getByText(/Nova Categoria/i);
+    
+    fireEvent.click(addButton);
+    
+    expect(screen.getByText(/Adicione uma nova categoria para classificar os reembolsos/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Nome da Categoria/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Valor Máximo/i)).toBeInTheDocument();
   });
 });
