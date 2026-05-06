@@ -12,15 +12,22 @@ export function formatCurrency(value: number) {
   }).format(value);
 }
 
-export function formatDate(date: string | Date) {
-  return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
+export function formatDate(date: string | Date | undefined | null) {
+  if (!date) return '-';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '-';
+  return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(d);
 }
 
-export function formatDateTime(date: string | Date) {
+export function formatDateTime(date: string | Date | undefined | null) {
+  if (!date) return '-';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',
     timeStyle: 'short',
-  }).format(new Date(date));
+    timeZone: 'UTC'
+  }).format(d);
 }
 
 export function formatDateForInput(date: string | Date | undefined) {

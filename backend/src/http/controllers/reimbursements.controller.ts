@@ -1,7 +1,6 @@
 import type { Request, Response } from 'express';
 import dayjs from 'dayjs';
-import fs from 'fs';
-import path from 'path';
+
 import * as res from '../../utils/responseHttp';
 import { prisma } from '../../core/prismaClient';
 import {
@@ -12,7 +11,12 @@ import {
   PaginationSchema,
 } from '../../schemas';
 import { getPagination, formatPaginatedResponse } from '../../utils/pagination';
-import type { User } from '../../../generated/prisma';
+import { sendNotification } from '../../utils/notifications';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const createReimbursement = async (
   request: Request,
@@ -35,12 +39,20 @@ export const createReimbursement = async (
       return res.notFound404(response, 'Categoria não encontrada.');
     }
 
+    if (validatedData.data.amount > category.amountMax) {
+      return res.clientFieldsError400(response, {
+        amount: [
+          `Valor máximo permitido na categoria ${category.name}: R$ ${category.amountMax}.00`,
+        ],
+      });
+    }
+
     // Criar a solicitação utilizando dayjs para normalizar a data se necessário
     const reimbursement = await prisma.reimbursementRequest.create({
       data: {
         description,
         amount,
-        expenseDate: dayjs(expenseDate).toDate(),
+        expenseDate: dayjs.utc(expenseDate).startOf('day').toDate(),
         userId: request.user.id,
         categoryId,
         status: 'RASCUNHO',
@@ -56,6 +68,11 @@ export const createReimbursement = async (
         observation: 'Solicitação criada pelo colaborador.',
       },
     });
+
+    sendNotification(
+      'Nova Solicitação de Reembolso',
+      `O colaborador ${request.user.name} criou uma nova solicitação de R$ ${amount.toFixed(2)}.`,
+    );
 
     return res.successCreated(
       response,
@@ -115,10 +132,12 @@ export const updateReimbursement = async (
       }
     }
 
-    const updateData = { ...validatedData.data };
-    if (updateData.expenseDate) {
-      updateData.expenseDate = dayjs(updateData.expenseDate).toDate();
-    }
+    const updateData = {
+      ...validatedData.data,
+      expenseDate: validatedData.data.expenseDate
+        ? dayjs.utc(validatedData.data.expenseDate).startOf('day').toDate()
+        : undefined,
+    };
 
     const updatedReimbursement = await prisma.reimbursementRequest.update({
       where: { id: validatedId.data.id },
@@ -134,6 +153,11 @@ export const updateReimbursement = async (
         observation: 'Solicitação atualizada pelo colaborador.',
       },
     });
+
+    sendNotification(
+      'Solicitação Atualizada',
+      `O colaborador ${request.user.name} atualizou os dados da solicitação #${updatedReimbursement.id.split('-')[0]}.`,
+    );
 
     return res.successData(response, updatedReimbursement);
   } catch (error) {
@@ -157,10 +181,22 @@ export const submitReimbursement = async (
 
     const reimbursement = await prisma.reimbursementRequest.findUnique({
       where: { id: validatedId.data.id },
+      include: {
+        _count: {
+          select: { attachments: true },
+        },
+      },
     });
 
     if (!reimbursement) {
       return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+
+    if (reimbursement.amount > 150 && reimbursement._count.attachments === 0) {
+      return res.clientError400(
+        response,
+        'É necessário anexar pelo menos um comprovante para enviar a solicitação.',
+      );
     }
 
     if (reimbursement.userId !== request.user.id) {
@@ -185,6 +221,11 @@ export const submitReimbursement = async (
         observation: 'Solicitação enviada para análise.',
       },
     });
+
+    sendNotification(
+      'Solicitação Enviada para Análise',
+      `Uma nova solicitação aguarda aprovação do gestor.`,
+    );
 
     return res.successData(response, {
       message: 'Solicitação enviada para análise.',
@@ -236,6 +277,11 @@ export const approveReimbursement = async (
         observation: 'Solicitação aprovada pelo gestor.',
       },
     });
+
+    sendNotification(
+      'Solicitação Aprovada',
+      `A solicitação #${validatedId.data.id.split('-')[0]} foi aprovada pelo gestor.`,
+    );
 
     return res.successData(response, { message: 'Solicitação aprovada.' });
   } catch (error) {
@@ -294,6 +340,11 @@ export const rejectReimbursement = async (
       },
     });
 
+    sendNotification(
+      'Solicitação Rejeitada',
+      `A solicitação #${validatedId.data.id.split('-')[0]} foi rejeitada pelo gestor.`,
+    );
+
     return res.successData(response, { message: 'Solicitação rejeitada.' });
   } catch (error) {
     console.error(error);
@@ -342,6 +393,11 @@ export const payReimbursement = async (
         observation: 'Pagamento realizado pelo financeiro.',
       },
     });
+
+    sendNotification(
+      'Pagamento Realizado',
+      `O financeiro realizou o pagamento da solicitação #${validatedId.data.id.split('-')[0]}.`,
+    );
 
     return res.successData(response, { message: 'Pagamento realizado.' });
   } catch (error) {
@@ -396,6 +452,11 @@ export const cancelReimbursement = async (
       },
     });
 
+    sendNotification(
+      'Solicitação Cancelada',
+      `O colaborador ${request.user.name} cancelou a solicitação #${validatedId.data.id.split('-')[0]}.`,
+    );
+
     return res.successData(response, { message: 'Solicitação cancelada.' });
   } catch (error) {
     console.error(error);
@@ -442,7 +503,7 @@ const getReimbursementsOrder = (request: Request) => {
   let orderBy: any = {};
   if (order === 'date') {
     orderBy = {
-      createdAt: orderDirection ? orderDirection : 'desc',
+      expenseDate: orderDirection ? orderDirection : 'desc',
     };
   }
   if (order === 'amount') {
@@ -487,8 +548,6 @@ export const getReimbursements = async (
           Object.keys(orderBy).length > 0 ? orderBy : { createdAt: 'desc' },
       }),
     ]);
-
-    console.log(result);
 
     return res.successData(
       response,
@@ -611,6 +670,11 @@ export const addAttachments = async (request: Request, response: Response) => {
       },
     });
 
+    sendNotification(
+      'Anexos Adicionados',
+      `Foram adicionados ${files.length} novos anexos à solicitação #${validatedId.data.id.split('-')[0]}.`,
+    );
+
     return res.successData(response, attachments);
   } catch (error) {
     console.error(error);
@@ -642,122 +706,6 @@ export const getRequestHistory = async (
     });
 
     return res.successData(response, history);
-  } catch (error) {
-    console.error(error);
-    return res.serverError500(response);
-  }
-};
-
-/**
- * Lista os anexos de uma solicitação específica.
- */
-export const getAttachments = async (request: Request, response: Response) => {
-  try {
-    const validatedId = uuidParam.safeParse(request.params);
-    if (!validatedId.success) {
-      return res.clientError400(response, 'ID inválido.');
-    }
-
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    // Colaborador só pode ver anexos das próprias solicitações
-    if (
-      request.user.role === 'COLABORADOR' &&
-      reimbursement.userId !== request.user.id
-    ) {
-      return res.userUnauthorized403(response, 'Ação não permitida.');
-    }
-
-    const attachments = await prisma.attachment.findMany({
-      where: { requestId: validatedId.data.id },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return res.successData(response, attachments);
-  } catch (error) {
-    console.error(error);
-    return res.serverError500(response);
-  }
-};
-/**
- * Deleta um anexo de uma solicitação (Apenas status RASCUNHO e pelo dono).
- */
-export const deleteAttachment = async (
-  request: Request,
-  response: Response,
-) => {
-  try {
-    const { idAttachement } = request.params;
-
-    const validatedId = uuidParam.safeParse(request.params);
-    const validatedAttachementId = uuidParam.safeParse({ id: idAttachement });
-
-    if (!validatedId.success || !validatedAttachementId.success) {
-      return res.clientError400(response, 'ID(s) inválido(s).');
-    }
-
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.userId !== request.user.id) {
-      return res.userUnauthorized403(response, 'Ação não permitida.');
-    }
-
-    if (reimbursement.status !== 'RASCUNHO') {
-      return res.clientError400(
-        response,
-        'Anexos só podem ser removidos em rascunhos.',
-      );
-    }
-
-    const attachment = await prisma.attachment.findFirst({
-      where: {
-        id: validatedAttachementId.data.id,
-        requestId: validatedId.data.id,
-      },
-    });
-
-    if (!attachment) {
-      return res.notFound404(response, 'Anexo não encontrado.');
-    }
-
-    const file = await prisma.attachment.delete({
-      where: { id: validatedAttachementId.data.id },
-    });
-
-    // Gerar histórico com os nomes dos arquivos
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'UPDATED',
-        observation: `Removendo 1 anexo(s): ${file.fileName}`,
-      },
-    });
-
-    // Remover arquivo físico do disco
-    if (file.fileUrl.includes('/uploads/')) {
-      const fileName = file.fileUrl.split('/uploads/').pop();
-      if (fileName) {
-        const filePath = path.join(process.cwd(), 'uploads', fileName);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      }
-    }
-
-    return res.successDelete204(response);
   } catch (error) {
     console.error(error);
     return res.serverError500(response);
