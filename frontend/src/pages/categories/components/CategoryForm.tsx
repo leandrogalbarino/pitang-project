@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import { FormModalLayout } from '@/components/dashboard/FormModalLayout';
 import { handleApiErrors } from '@/lib/form-utils';
 import { InputGroup } from '@/components/ui/InputGroup';
+import { SelectGroup } from '@/components/ui/SelectGroup';
+import { SelectItem } from '@/components/ui/select';
 
 export function CategoryForm({
   category,
@@ -25,18 +27,24 @@ export function CategoryForm({
     reset,
     setError,
     clearErrors,
+    control,
     formState: { errors },
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: category?.name || '',
-      amountMax: category?.amountMax || 0,
+      amountMax: category?.amountMax,
+      active: category?.active ?? true,
     },
   });
 
   useEffect(() => {
     clearErrors();
-    reset({ name: category ? category.name : '' });
+    reset({
+      name: category ? category.name : '',
+      amountMax: category ? category?.amountMax : 300,
+      active: category ? category.active : true,
+    });
 
     return () => {
       reset({ name: '' });
@@ -96,6 +104,18 @@ export function CategoryForm({
         registration={register('amountMax', { valueAsNumber: true })}
         error={errors.amountMax}
       />
+      {category && !category.active && (
+        <SelectGroup
+          label="Status da Categoria"
+          name="active"
+          control={control}
+          error={errors.active}
+          placeholder="Selecione o status"
+        >
+          <SelectItem value="true">Ativo</SelectItem>
+          <SelectItem value="false">Inativo</SelectItem>
+        </SelectGroup>
+      )}
     </FormModalLayout>
   );
 }

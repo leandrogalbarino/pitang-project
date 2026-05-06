@@ -34,8 +34,12 @@ export function SelectGroup({
         control={control}
         render={({ field }) => (
           <Select 
-            value={field.value} 
-            onValueChange={field.onChange} 
+            value={field.value !== undefined && field.value !== null ? String(field.value) : undefined} 
+            onValueChange={(val) => {
+              if (val === 'true') field.onChange(true);
+              else if (val === 'false') field.onChange(false);
+              else field.onChange(val);
+            }} 
             disabled={disabled}
           >
             <SelectTrigger id={name} className={error ? 'border-destructive' : ''}>

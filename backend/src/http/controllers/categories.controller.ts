@@ -17,7 +17,7 @@ export const getCategories = async (request: Request, response: Response) => {
     const { skip, take } = getPagination(page, limit);
 
     const { search } = request.query;
-    let whereClause: any = { active: true };
+    let whereClause: any = {};
 
     if (search) {
       whereClause = {
@@ -29,6 +29,9 @@ export const getCategories = async (request: Request, response: Response) => {
         ],
       };
     }
+    if (request.user?.role !== 'ADMIN') {
+      whereClause.active = true;
+    }
 
     const [total, result] = await Promise.all([
       prisma.category.count({ where: whereClause }),
@@ -36,7 +39,7 @@ export const getCategories = async (request: Request, response: Response) => {
         where: whereClause,
         skip,
         take,
-        orderBy: { name: 'asc' },
+        orderBy: [{ active: 'desc' }, { name: 'asc' }],
       }),
     ]);
 
@@ -60,7 +63,7 @@ export const createCategory = async (request: Request, response: Response) => {
       return res.handleValidationError(response, validatedData.error);
     }
 
-    const { name, active, amountMax } = validatedData.data;
+    const { name } = validatedData.data;
 
     // Verificar se já existe
     const existing = await prisma.category.findFirst({
