@@ -5,10 +5,10 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=kiseagain
+      - POSTGRES_PASSWORD=docker_pass
       - POSTGRES_DB=pitang_project
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
