@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 
 import * as res from '../../utils/responseHttp';
 import { prisma } from '../../core/prismaClient';
+import { reimbursementService } from '../../services/reimbursements.service';
 import {
   ReimbursementRequestSchema,
   ReimbursementUpdateSchema,
@@ -28,49 +29,14 @@ export const createReimbursement = async (
       return res.handleValidationError(response, validatedData.error);
     }
 
-    const { categoryId, description, amount, expenseDate } = validatedData.data;
-
-    // Verificar se a categoria existe e está ativa
-    const category = await prisma.category.findFirst({
-      where: { id: categoryId, active: true },
-    });
-
-    if (!category) {
-      return res.notFound404(response, 'Categoria não encontrada.');
-    }
-    if (validatedData.data.amount > category.amountMax) {
-      return res.clientFieldsError400(response, {
-        amount: [
-          `Valor máximo permitido na categoria ${category.name}: R$ ${category.amountMax}.00`,
-        ],
-      });
-    }
-
-    // Criar a solicitação utilizando dayjs para normalizar a data se necessário
-    const reimbursement = await prisma.reimbursementRequest.create({
-      data: {
-        description,
-        amount,
-        expenseDate: dayjs.utc(expenseDate).startOf('day').toDate(),
-        userId: request.user.id,
-        categoryId,
-        status: 'RASCUNHO',
-      },
-    });
-
-    // Gerar histórico
-    await prisma.requestHistory.create({
-      data: {
-        requestId: reimbursement.id,
-        userId: request.user.id,
-        action: 'CREATED',
-        observation: 'Solicitação criada pelo colaborador.',
-      },
-    });
+    const reimbursement = await reimbursementService.create(
+      validatedData.data,
+      request.user,
+    );
 
     sendNotification(
       'Nova Solicitação de Reembolso',
-      `O colaborador ${request.user.name} criou uma nova solicitação de R$ ${amount.toFixed(2)}.`,
+      `O colaborador ${request.user.name} criou uma nova solicitação de R$ ${validatedData.data.amount.toFixed(2)}.`,
     );
 
     return res.successCreated(
@@ -78,7 +44,15 @@ export const createReimbursement = async (
       'Solicitação criada com sucesso.',
       reimbursement,
     );
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'CATEGORY_NOT_FOUND') {
+      return res.notFound404(response, 'Categoria não encontrada.');
+    }
+    if (error.message === 'AMOUNT_EXCEEDS_CATEGORY_LIMIT') {
+      return res.clientFieldsError400(response, {
+        amount: ['Valor excede o limite permitido para esta categoria.'],
+      });
+    }
     console.error(error);
     return res.serverError500(response);
   }
@@ -99,76 +73,39 @@ export const updateReimbursement = async (
       return res.handleValidationError(response, validatedData.error);
     }
 
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    // Apenas o dono pode editar
-    if (reimbursement.userId !== request.user.id) {
-      return res.userUnauthorized403(response, 'Ação não permitida.');
-    }
-
-    // Apenas em RASCUNHO
-    if (reimbursement.status !== 'RASCUNHO') {
-      return res.clientError400(
-        response,
-        'Edição permitida apenas enquanto estão em Rascunho.',
-      );
-    }
-
-    // Verificar se a categoria existe e está ativa
-    const category = await prisma.category.findFirst({
-      where: { id: validatedData.data.categoryId, active: true },
-    });
-
-    if (!category) {
-      return res.notFound404(
-        response,
-        'Categoria não encontrada ou está inativa.',
-      );
-    }
-
-    if (validatedData.data.amount > category.amountMax) {
-      return res.clientFieldsError400(response, {
-        amount: [
-          `Valor máximo permitido na categoria ${category.name}: R$ ${category.amountMax}.00`,
-        ],
-      });
-    }
-
-    const updateData = {
-      ...validatedData.data,
-      expenseDate: validatedData.data.expenseDate
-        ? dayjs.utc(validatedData.data.expenseDate).startOf('day').toDate()
-        : undefined,
-    };
-
-    const updatedReimbursement = await prisma.reimbursementRequest.update({
-      where: { id: validatedId.data.id },
-      data: updateData,
-    });
-
-    // Gerar histórico
-    await prisma.requestHistory.create({
-      data: {
-        requestId: updatedReimbursement.id,
-        userId: request.user.id,
-        action: 'UPDATED',
-        observation: 'Solicitação atualizada pelo colaborador.',
-      },
-    });
+    const updated = await reimbursementService.update(
+      validatedId.data.id,
+      validatedData.data,
+      request.user,
+    );
 
     sendNotification(
       'Solicitação Atualizada',
-      `O colaborador ${request.user.name} atualizou os dados da solicitação #${updatedReimbursement.id.split('-')[0]}.`,
+      `O colaborador ${request.user.name} atualizou os dados da solicitação #${updated.id.split('-')[0]}.`,
     );
 
-    return res.successData(response, updatedReimbursement);
-  } catch (error) {
+    return res.successData(response, updated);
+  } catch (error: any) {
+    if (error.message === 'REIMBURSEMENT_NOT_FOUND') {
+      return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+    if (error.message === 'UNAUTHORIZED') {
+      return res.userUnauthorized403(response, 'Ação não permitida.');
+    }
+    if (error.message === 'INVALID_STATUS_FOR_UPDATE') {
+      return res.clientError400(
+        response,
+        'Edição permitida apenas enquanto em rascunho.',
+      );
+    }
+    if (error.message === 'CATEGORY_NOT_FOUND') {
+      return res.notFound404(response, 'Categoria não encontrada ou inativa.');
+    }
+    if (error.message === 'AMOUNT_EXCEEDS_CATEGORY_LIMIT') {
+      return res.clientFieldsError400(response, {
+        amount: ['Valor excede o limite permitido para esta categoria.'],
+      });
+    }
     console.error(error);
     return res.serverError500(response);
   }
@@ -187,48 +124,7 @@ export const submitReimbursement = async (
       return res.clientError400(response, 'ID inválido.');
     }
 
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-      include: {
-        _count: {
-          select: { attachments: true },
-        },
-      },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.amount > 150 && reimbursement._count.attachments === 0) {
-      return res.clientError400(
-        response,
-        'É necessário anexar pelo menos um comprovante para enviar uma solicitação com valor acima de R$ 150,00.',
-      );
-    }
-
-    if (reimbursement.userId !== request.user.id) {
-      return res.userUnauthorized403(response, 'Ação não permitida.');
-    }
-
-    if (reimbursement.status !== 'RASCUNHO') {
-      return res.clientError400(response, 'Transição inválida.');
-    }
-
-    await prisma.reimbursementRequest.update({
-      where: { id: validatedId.data.id },
-      data: { status: 'ENVIADO' },
-    });
-
-    // Gerar histórico
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'SUBMITTED',
-        observation: 'Solicitação enviada para análise.',
-      },
-    });
+    await reimbursementService.submit(validatedId.data.id, request.user);
 
     sendNotification(
       'Solicitação Enviada para Análise',
@@ -238,8 +134,32 @@ export const submitReimbursement = async (
     return res.successData(response, {
       message: 'Solicitação enviada para análise.',
     });
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    if (error.message === 'REIMBURSEMENT_NOT_FOUND') {
+      return res.notFound404(
+        response,
+        'Solicitação de reembolso não encontrada.',
+      );
+    }
+    if (error.message === 'AMOUNT_REQUIRED_FILES') {
+      return res.clientError400(
+        response,
+        'Solicitações de reembolso com valor superior a R$ 150,00 requerem arquivos anexados.',
+      );
+    }
+    if (error.message === 'UNAUTHORIZED') {
+      return res.userUnauthorized403(
+        response,
+        'Você não tem permissão para realizar essa ação.',
+      );
+    }
+    if (error.message === 'INVALID_STATUS_FOR_UPDATE') {
+      return res.userUnauthorized403(
+        response,
+        'Apenas solicitações em Rascunho podem serem enviadas.',
+      );
+    }
+
     return res.serverError500(response);
   }
 };
@@ -257,34 +177,7 @@ export const approveReimbursement = async (
       return res.clientError400(response, 'ID inválido.');
     }
 
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.status !== 'ENVIADO') {
-      return res.clientError400(
-        response,
-        'Apenas solicitações enviadas podem ser aprovadas.',
-      );
-    }
-
-    await prisma.reimbursementRequest.update({
-      where: { id: validatedId.data.id },
-      data: { status: 'APROVADO' },
-    });
-
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'APPROVED',
-        observation: 'Solicitação aprovada pelo gestor.',
-      },
-    });
+    await reimbursementService.approve(validatedId.data.id, request.user);
 
     sendNotification(
       'Solicitação Aprovada',
@@ -292,7 +185,23 @@ export const approveReimbursement = async (
     );
 
     return res.successData(response, { message: 'Solicitação aprovada.' });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'REIMBURSEMENT_NOT_FOUND') {
+      return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+
+    if (error.message === 'INVALID_STATUS_FOR_UPDATE') {
+      return res.clientError400(
+        response,
+        'Apenas solicitações enviadas podem ser aprovadas.',
+      );
+    }
+    if (error.message === 'UNAUTHORIZED') {
+      return res.userUnauthorized403(
+        response,
+        'Apenas gestores tem a permissão para realizar aprovações.',
+      );
+    }
     console.error(error);
     return res.serverError500(response);
   }
@@ -315,38 +224,11 @@ export const rejectReimbursement = async (
     if (!validatedData.success) {
       return res.handleValidationError(response, validatedData.error);
     }
-
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.status !== 'ENVIADO') {
-      return res.clientError400(
-        response,
-        'Apenas solicitações enviadas podem ser rejeitadas.',
-      );
-    }
-
-    await prisma.reimbursementRequest.update({
-      where: { id: validatedId.data.id },
-      data: {
-        status: 'REJEITADO',
-        rejectionDescription: validatedData.data.rejectionDescription,
-      },
-    });
-
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'REJECTED',
-        observation: `Solicitação rejeitada. Justificativa: ${validatedData.data.rejectionDescription}`,
-      },
-    });
+    await reimbursementService.reject(
+      validatedId.data.id,
+      validatedData.data,
+      request.user,
+    );
 
     sendNotification(
       'Solicitação Rejeitada',
@@ -354,8 +236,23 @@ export const rejectReimbursement = async (
     );
 
     return res.successData(response, { message: 'Solicitação rejeitada.' });
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    if (error.message === 'REIMBURSEMENT_NOT_FOUND') {
+      return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+
+    if (error.message === 'INVALID_STATUS_FOR_UPDATE') {
+      return res.clientError400(
+        response,
+        'Apenas solicitações enviadas podem ser rejeitadas.',
+      );
+    }
+    if (error.message === 'UNAUTHORIZED') {
+      return res.userUnauthorized403(
+        response,
+        'Apenas gestores tem a permissão para realizar rejeições.',
+      );
+    }
     return res.serverError500(response);
   }
 };
@@ -373,34 +270,7 @@ export const payReimbursement = async (
       return res.clientError400(response, 'ID inválido.');
     }
 
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.status !== 'APROVADO') {
-      return res.clientError400(
-        response,
-        'Apenas solicitações aprovadas podem ser pagas.',
-      );
-    }
-
-    await prisma.reimbursementRequest.update({
-      where: { id: validatedId.data.id },
-      data: { status: 'PAGO' },
-    });
-
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'PAID',
-        observation: 'Pagamento realizado pelo financeiro.',
-      },
-    });
+    await reimbursementService.pay(validatedId.data.id, request.user);
 
     sendNotification(
       'Pagamento Realizado',
@@ -408,8 +278,25 @@ export const payReimbursement = async (
     );
 
     return res.successData(response, { message: 'Pagamento realizado.' });
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    if (error.message === 'UNAUTHORIZED') {
+      return res.notFound404(
+        response,
+        'Apenas o Financeiro pode realizar pagamentos.',
+      );
+    }
+
+    if (error.message === 'REIMBURSEMENT_NOT_FOUND') {
+      return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+
+    if (error.message === 'INVALID_STATUS_FOR_UPDATE') {
+      return res.clientError400(
+        response,
+        'Apenas solicitações aprovadas podem ser pagas.',
+      );
+    }
+
     return res.serverError500(response);
   }
 };
@@ -427,46 +314,28 @@ export const cancelReimbursement = async (
       return res.clientError400(response, 'ID inválido.');
     }
 
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.userId !== request.user.id) {
-      return res.userUnauthorized403(response, 'Ação não permitida.');
-    }
-
-    if (reimbursement.status !== 'RASCUNHO') {
-      return res.clientError400(
-        response,
-        'Apenas solicitações em rascunho podem ser canceladas.',
-      );
-    }
-
-    await prisma.reimbursementRequest.update({
-      where: { id: validatedId.data.id },
-      data: { status: 'CANCELADO' },
-    });
-
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'CANCELED',
-        observation: 'Solicitação cancelada pelo colaborador.',
-      },
-    });
-
+    await reimbursementService.cancel(validatedId.data.id, request.user);
     sendNotification(
       'Solicitação Cancelada',
       `O colaborador ${request.user.name} cancelou a solicitação #${validatedId.data.id.split('-')[0]}.`,
     );
 
     return res.successData(response, { message: 'Solicitação cancelada.' });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'REIMBURSEMENT_NOT_FOUND') {
+      return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+
+    if (error.message === 'INVALID_STATUS_FOR_UPDATE') {
+      return res.clientError400(
+        response,
+        'Apenas solicitações em rascunho podem ser canceladas.',
+      );
+    }
+    if (error.message === 'UNAUTHORIZED') {
+      return res.userUnauthorized403(response, 'Ação não permitida.');
+    }
+
     console.error(error);
     return res.serverError500(response);
   }
@@ -625,77 +494,6 @@ export const getSingleReimbursement = async (
   }
 };
 
-/**
- * Adiciona anexos a uma solicitação (Apenas status RASCUNHO e pelo dono).
- */
-export const addAttachments = async (request: Request, response: Response) => {
-  try {
-    const validatedId = uuidParam.safeParse(request.params);
-    if (!validatedId.success) {
-      return res.clientError400(response, 'ID inválido.');
-    }
-
-    const reimbursement = await prisma.reimbursementRequest.findUnique({
-      where: { id: validatedId.data.id },
-    });
-
-    if (!reimbursement) {
-      return res.notFound404(response, 'Solicitação não encontrada.');
-    }
-
-    if (reimbursement.userId !== request.user.id) {
-      return res.userUnauthorized403(response, 'Ação não permitida.');
-    }
-
-    if (reimbursement.status !== 'RASCUNHO') {
-      return res.clientError400(
-        response,
-        'Anexos só podem ser adicionados em rascunhos.',
-      );
-    }
-
-    const files = request.files as Express.Multer.File[];
-    if (!files || files.length === 0) {
-      return res.clientError400(response, 'Nenhum arquivo enviado.');
-    }
-
-    const attachments = await Promise.all(
-      files.map((file) => {
-        const fileUrl = `${request.protocol}://${request.get('host')}/uploads/${file.filename}`;
-
-        return prisma.attachment.create({
-          data: {
-            requestId: validatedId.data.id,
-            fileName: file.originalname,
-            fileUrl: fileUrl,
-            fileType: file.mimetype,
-          },
-        });
-      }),
-    );
-
-    // Gerar histórico com os nomes dos arquivos
-    const fileNames = files.map((f) => f.originalname).join(', ');
-    await prisma.requestHistory.create({
-      data: {
-        requestId: validatedId.data.id,
-        userId: request.user.id,
-        action: 'UPDATED',
-        observation: `Adicionado(s) ${files.length} anexo(s): ${fileNames}`,
-      },
-    });
-
-    sendNotification(
-      'Anexos Adicionados',
-      `Foram adicionados ${files.length} novos anexos à solicitação #${validatedId.data.id.split('-')[0]}.`,
-    );
-
-    return res.successData(response, attachments);
-  } catch (error) {
-    console.error(error);
-    return res.serverError500(response);
-  }
-};
 
 /**
  * Obtém o histórico de uma solicitação.

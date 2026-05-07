@@ -3,7 +3,6 @@ import { checkRole } from '../middlewares/role.middleware';
 import { Role } from '../../../generated/prisma';
 import { uploadMiddleware } from '../middlewares/upload.middleware';
 import {
-  addAttachments,
   approveReimbursement,
   cancelReimbursement,
   createReimbursement,
@@ -15,7 +14,7 @@ import {
   submitReimbursement,
   updateReimbursement,
 } from '../controllers/reimbursements.controller';
-import { deleteAttachment, getAttachments } from '../controllers/attachment.controller';
+import { addAttachments, deleteAttachment, getAttachments } from '../controllers/attachment.controller';
 
 const reimbursementsRoutes = express.Router();
 

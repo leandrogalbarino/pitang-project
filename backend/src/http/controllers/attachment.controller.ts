@@ -127,3 +127,75 @@ export const deleteAttachment = async (
     return res.serverError500(response);
   }
 };
+
+/**
+ * Adiciona anexos a uma solicitação (Apenas status RASCUNHO e pelo dono).
+ */
+export const addAttachments = async (request: Request, response: Response) => {
+  try {
+    const validatedId = uuidParam.safeParse(request.params);
+    if (!validatedId.success) {
+      return res.clientError400(response, 'ID inválido.');
+    }
+
+    const reimbursement = await prisma.reimbursementRequest.findUnique({
+      where: { id: validatedId.data.id },
+    });
+
+    if (!reimbursement) {
+      return res.notFound404(response, 'Solicitação não encontrada.');
+    }
+
+    if (reimbursement.userId !== request.user.id) {
+      return res.userUnauthorized403(response, 'Ação não permitida.');
+    }
+
+    if (reimbursement.status !== 'RASCUNHO') {
+      return res.clientError400(
+        response,
+        'Anexos só podem ser adicionados em rascunhos.',
+      );
+    }
+
+    const files = request.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      return res.clientError400(response, 'Nenhum arquivo enviado.');
+    }
+
+    const attachments = await Promise.all(
+      files.map((file) => {
+        const fileUrl = `${request.protocol}://${request.get('host')}/uploads/${file.filename}`;
+
+        return prisma.attachment.create({
+          data: {
+            requestId: validatedId.data.id,
+            fileName: file.originalname,
+            fileUrl: fileUrl,
+            fileType: file.mimetype,
+          },
+        });
+      }),
+    );
+
+    // Gerar histórico com os nomes dos arquivos
+    const fileNames = files.map((f) => f.originalname).join(', ');
+    await prisma.requestHistory.create({
+      data: {
+        requestId: validatedId.data.id,
+        userId: request.user.id,
+        action: 'UPDATED',
+        observation: `Adicionado(s) ${files.length} anexo(s): ${fileNames}`,
+      },
+    });
+
+    sendNotification(
+      'Anexos Adicionados',
+      `Foram adicionados ${files.length} novos anexos à solicitação #${validatedId.data.id.split('-')[0]}.`,
+    );
+
+    return res.successData(response, attachments);
+  } catch (error) {
+    console.error(error);
+    return res.serverError500(response);
+  }
+};
