@@ -1,11 +1,7 @@
 import type { Request, Response } from 'express';
 import { prisma } from '../../core/prismaClient';
 import * as res from '../../utils/responseHttp';
-import {
-  CategorySchema,
-  uuidParam,
-  PaginationSchema,
-} from '../../schemas';
+import { CategorySchema, uuidParam, PaginationSchema } from '../../schemas';
 import { getPagination, formatPaginatedResponse } from '../../utils/pagination';
 
 /**
@@ -118,24 +114,21 @@ export const updateCategory = async (request: Request, response: Response) => {
       return res.notFound404(response, 'Categoria não encontrada.');
     }
 
-    // Correção: Ignora o ID atual para permitir atualização de status sem conflito de nome
-    if (validatedData.data.name) {
-      const existing = await prisma.category.findFirst({
-        where: {
-          name: validatedData.data.name,
-          NOT: { id: validatedId.data.id },
-        },
-      });
+    const existing = await prisma.category.findFirst({
+      where: {
+        name: validatedData.data.name,
+        NOT: { id: validatedId.data.id },
+      },
+    });
 
-      if (existing) {
-        return res.clientErrorConflict409(
-          response,
-          'Já existe uma categoria com este nome.',
-          {
-            name: ['Já existe uma categoria com este nome.'],
-          },
-        );
-      }
+    if (existing) {
+      return res.clientErrorConflict409(
+        response,
+        'Já existe uma categoria com este nome.',
+        {
+          name: ['Já existe uma categoria com este nome.'],
+        },
+      );
     }
 
     const updated = await prisma.category.update({

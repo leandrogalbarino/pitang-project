@@ -32,6 +32,7 @@ const authMiddleware = (
   if (!authHeader) {
     return res.userNotAuthenticated401(response, 'Usuário não autenticado.');
   }
+
   const token = authHeader.split(' ')[1];
 
   if (!token) {

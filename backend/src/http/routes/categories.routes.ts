@@ -12,7 +12,6 @@ import {
 const categoriesRoutes = express.Router();
 
 // Listar todas as categorias (Pode ser aberto para todos os perfis)
-
 categoriesRoutes.get('/', getCategories);
 
 // Apenas ADMIN pode criar ou editar categorias

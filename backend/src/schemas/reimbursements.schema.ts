@@ -53,28 +53,6 @@ export const ReimbursementRequestSchema = z.object(
   },
 );
 
-export const ReimbursementUpdateSchema = z.object(
-  {
-    description: z.string().min(5),
-    amount: z.number().positive(),
-    expenseDate: z.string().refine(
-        (dateStr) => {
-          if (!dateStr) return true;
-          const now = dayjs().tz('America/Sao_Paulo').startOf('day');
-          const inputDate = dayjs(dateStr).startOf('day');
-          return !inputDate.isAfter(now);
-        },
-        {
-          message: 'Não é possível colocar uma data posterior a atual',
-        },
-    ),
-    categoryId: z.uuid('Id inválido.'),
-  },
-  {
-    message: 'Insira os campos necessários.',
-  },
-);
-
 export const RejectionSchema = z.object(
   {
     rejectionDescription: z

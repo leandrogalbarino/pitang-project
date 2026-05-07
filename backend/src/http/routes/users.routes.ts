@@ -18,7 +18,7 @@ userRoutes.delete('/:id', userDelete);
 userRoutes.use(checkRole([Role.ADMIN]));
 userRoutes.get('/', getUsers);
 userRoutes.post('/', userRegister);
-
 userRoutes.get('/:id', getSingleUser);
+
 
 export default userRoutes;

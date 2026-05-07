@@ -101,7 +101,12 @@ describe('Categories Endpoints', () => {
 
   it('Não deve permitir que um colaborador crie, edite ou desative categorias', async () => {
     const colab = await prisma.user.create({
-      data: { name: 'Colab', email: 'colab_cat@test.com', password: 'hash', role: 'COLABORADOR' },
+      data: {
+        name: 'Colab',
+        email: 'colab_cat@test.com',
+        password: 'hash',
+        role: 'COLABORADOR',
+      },
     });
     const colabToken = generateToken(colab);
 
@@ -145,6 +150,7 @@ describe('Categories Endpoints', () => {
 
       expect(res.body.data.data.length).toBe(5);
       expect(res.body.data.pagination.total).toBe(12);
+      expect(res.body.data.pagination.totalPages).toBe(3);
     });
 
     it('Deve filtrar categorias por nome (search)', async () => {

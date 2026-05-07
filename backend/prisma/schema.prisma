@@ -94,7 +94,7 @@ model RequestHistory {
   requestId   String
   userId      String
   action      HistoryAction
-  observation String?       // Observação sobre a ação realizada
+  observation String?      
   createdAt   DateTime @default(now())
 
   request     ReimbursementRequest @relation(fields: [requestId], references: [id])

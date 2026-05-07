@@ -9,9 +9,6 @@ const environmentSchema = z.object({
     message: 'JWT_PRIVATE_KEY é obrigatória no arquivo .env',
   }),
   HTTP_PORT: z.coerce.number().default(3000),
-  CLOUDINARY_CLOUD_NAME: z.string().optional(),
-  CLOUDINARY_API_KEY: z.string().optional(),
-  CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 const result = environmentSchema.safeParse(process.env);

@@ -92,7 +92,6 @@ export const userRegister = async (request: Request, response: Response) => {
       data: {
         ...userToSave,
         password: passwordHashed,
-        role: result.data.role || 'COLABORADOR',
       },
     });
 

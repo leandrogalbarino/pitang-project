@@ -36,6 +36,7 @@ export const clientFieldsError400 = (
     status: 400,
   });
 };
+
 export const clientError400 = (response: Response, message: string) => {
   return response.status(STATUS_CODE.HTTP_CLIENT_ERROR_400).json({
     message,

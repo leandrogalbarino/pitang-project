@@ -13,6 +13,7 @@ routes.post('/auth/login', userLogin);
 routes.use('/users', userRoutes);
 routes.use('/categories', categoriesRoutes);
 routes.use('/reimbursements', reimbursementsRoutes);
+
 routes.use('/dashboard', dashboardRoutes);
 
 export default routes;

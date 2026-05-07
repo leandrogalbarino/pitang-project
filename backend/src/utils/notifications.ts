@@ -1,5 +1,4 @@
-
-const NTFY_TOPIC = 'pitang_reimbursements_notifications'; // Você pode personalizar este tópico
+const NTFY_TOPIC = 'pitang_reimbursements_notifications'; 
 const NTFY_URL = `https://ntfy.sh/${NTFY_TOPIC}`;
 
 export const sendNotification = async (title: string, message: string) => {

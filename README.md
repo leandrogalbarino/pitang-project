@@ -74,8 +74,6 @@ Após rodar o comando de inicialização, você pode acessar o sistema com os se
 
 ## 🧪 Testes Automatizados
 
-.
-
 ### Rodar todos os testes (Fullstack)
 
 Na raiz do projeto:

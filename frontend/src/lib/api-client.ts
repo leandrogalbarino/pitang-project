@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export interface ApiResponse<T> {
   data: T;
@@ -57,6 +57,12 @@ async function apiRequest<T>(
       (response.status === 400 || response.status === 409) &&
       result.data &&
       !Array.isArray(result.data);
+
+    if (response.status === 401) {
+      localStorage.removeItem('@Pitang:token');
+      localStorage.removeItem('@Pitang:user');
+      window.location.href = '/login';
+    }
 
     throw {
       message: result.message || 'Erro na requisição',

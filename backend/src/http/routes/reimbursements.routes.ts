@@ -14,12 +14,19 @@ import {
   submitReimbursement,
   updateReimbursement,
 } from '../controllers/reimbursements.controller';
-import { addAttachments, deleteAttachment, getAttachments } from '../controllers/attachment.controller';
+import {
+  addAttachments,
+  deleteAttachment,
+  getAttachments,
+} from '../controllers/attachment.controller';
 
 const reimbursementsRoutes = express.Router();
 
 // Listar solicitações (filtro por perfil no controller)
 reimbursementsRoutes.get('/', getReimbursements);
+
+// Detalhar solicitação específica
+reimbursementsRoutes.get('/:id', getSingleReimbursement);
 
 // Criar nova solicitação
 reimbursementsRoutes.post(
@@ -28,8 +35,6 @@ reimbursementsRoutes.post(
   createReimbursement,
 );
 
-// Detalhar solicitação específica
-reimbursementsRoutes.get('/:id', getSingleReimbursement);
 
 // Atualizar solicitação (Apenas em RASCUNHO pelo dono)
 reimbursementsRoutes.put(

@@ -6,7 +6,6 @@ import { prisma } from '../../core/prismaClient';
 import { reimbursementService } from '../../services/reimbursements.service';
 import {
   ReimbursementRequestSchema,
-  ReimbursementUpdateSchema,
   RejectionSchema,
   uuidParam,
   PaginationSchema,
@@ -68,7 +67,7 @@ export const updateReimbursement = async (
       return res.clientError400(response, 'ID inválido.');
     }
 
-    const validatedData = ReimbursementUpdateSchema.safeParse(request.body);
+    const validatedData = ReimbursementRequestSchema.safeParse(request.body);
     if (!validatedData.success) {
       return res.handleValidationError(response, validatedData.error);
     }
@@ -224,6 +223,7 @@ export const rejectReimbursement = async (
     if (!validatedData.success) {
       return res.handleValidationError(response, validatedData.error);
     }
+
     await reimbursementService.reject(
       validatedId.data.id,
       validatedData.data,
@@ -494,7 +494,6 @@ export const getSingleReimbursement = async (
   }
 };
 
-
 /**
  * Obtém o histórico de uma solicitação.
  */
@@ -508,6 +507,13 @@ export const getRequestHistory = async (
       return res.clientError400(response, 'ID inválido.');
     }
 
+    if (
+      request.user.id !== validatedId.data.id &&
+      request.user.role != 'COLABORADOR'
+    ) {
+      return res.userUnauthorized403(response, 'Acesso não permitido.');
+    }
+    
     const history = await prisma.requestHistory.findMany({
       where: { requestId: validatedId.data.id },
       include: {

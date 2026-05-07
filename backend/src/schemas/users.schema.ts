@@ -22,16 +22,6 @@ export const UserRegistrationSchema = z
     path: ['password2'],
   });
 
-export const UserResponseSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-  email: z.email(),
-  active: z.boolean(),
-  role: RoleEnum,
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
 export const UserAdminUpdateSchema = z
   .object({
     role: RoleEnum.optional(),
@@ -72,7 +62,18 @@ export const UserUpdateSchema = z
     path: ['message'],
   });
 
+export const UserResponseSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  email: z.email(),
+  active: z.boolean(),
+  role: RoleEnum,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
 export const UserListSchema = z.array(UserResponseSchema);
+
 
 export const LoginSchema = z.object(
   {

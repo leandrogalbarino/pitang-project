@@ -24,7 +24,7 @@ export class ReimbursementService {
       throw new Error('CATEGORY_NOT_FOUND');
     }
 
-    // 2. Validar valor máximo da categoria
+    // Validar valor máximo da categoria
     if (data.amount > category.amountMax) {
       throw new Error('AMOUNT_EXCEEDS_CATEGORY_LIMIT');
     }
