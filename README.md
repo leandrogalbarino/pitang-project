@@ -54,9 +54,6 @@ docker compose up -d db
 O comando abaixo irá aplicar as migrações do banco, popular os dados iniciais (seed) e iniciar o Frontend e Backend simultaneamente:
 
 ```bash
-cd backend
-bun run test:setup
-cd ..
 bun run dev:init
 ```
 

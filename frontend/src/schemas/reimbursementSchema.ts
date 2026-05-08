@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';

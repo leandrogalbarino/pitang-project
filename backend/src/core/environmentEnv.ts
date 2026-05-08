@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import '../config/env.config';
 
 const environmentSchema = z.object({
