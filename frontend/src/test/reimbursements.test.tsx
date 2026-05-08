@@ -17,7 +17,7 @@ vi.mock('@/lib/api-client', () => ({
 
 import { Controller } from 'react-hook-form';
 
-vi.mock('@/components/dashboard/reimbursements/CategorySelectGroup', () => ({
+vi.mock('@/components/ui/dashboard/reimbursements/CategorySelectGroup', () => ({
   CategorySelectGroup: ({ control, categories, error }: any) => (
     <div>
       <label htmlFor="categoryId">Categoria</label>

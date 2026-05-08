@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { Sidebar } from '@/components/dashboard/Sidebar';
+import { Sidebar } from '@/components/ui/dashboard/Sidebar';
 import { BrowserRouter } from 'react-router-dom';
 import { Dialog } from '@/components/ui/dialog';
 import { SWRConfig } from 'swr';
@@ -19,7 +19,7 @@ const mockedUsedNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
-    ...actual as any,
+    ...(actual as any),
     useNavigate: () => mockedUsedNavigate,
   };
 });
@@ -40,7 +40,7 @@ describe('Sidebar Component', () => {
             <Sidebar user={mockUser as any} signOut={mockSignOut} />
           </Dialog>
         </BrowserRouter>
-      </SWRConfig>
+      </SWRConfig>,
     );
 
     const logoutButton = screen.getByText(/Sair da conta/i);
