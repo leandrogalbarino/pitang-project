@@ -1,34 +1,31 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import CategoriesList from '@/pages/categories/CategoriesList';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { SWRConfig } from 'swr';
 
 // Mock do hook useSWR
-vi.mock('swr', async (importOriginal) => {
-  const actual = await importOriginal<any>();
-  return {
-    ...actual,
-    default: vi.fn(() => ({
-      data: {
-        data: [
-          { id: '1', name: 'Alimentação', active: true },
-          { id: '2', name: 'Transporte', active: true },
-        ],
-        pagination: { page: 1, totalPages: 1, total: 2 },
-      },
-      mutate: vi.fn(),
-    })),
-  };
-});
+vi.mock('swr', () => ({
+  default: vi.fn(() => ({
+    data: {
+      data: [
+        { id: '1', name: 'Alimentação', active: true },
+        { id: '2', name: 'Transporte', active: true },
+      ],
+      pagination: { page: 1, totalPages: 1, total: 2 },
+    },
+    mutate: vi.fn(),
+  })),
+  SWRConfig: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 describe('CategoriesList Page', () => {
   const renderCategories = () => {
     return render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <BrowserRouter>
+        <MemoryRouter>
           <CategoriesList />
-        </BrowserRouter>
+        </MemoryRouter>
       </SWRConfig>
     );
   };

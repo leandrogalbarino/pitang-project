@@ -3,14 +3,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { ReimbursementTableActions } from '@/pages/reimbursements/components/ReimbursementTableActions';
 import * as AuthContext from '@/contexts/AuthContext';
 
-// Mock do hook useAuth
-vi.mock('@/contexts/AuthContext', async () => {
-  const actual = await vi.importActual('@/contexts/AuthContext');
-  return {
-    ...actual as any,
-    useAuth: vi.fn(),
-  };
-});
+// Mock do AuthContext de forma robusta
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: vi.fn(),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 describe('ReimbursementTableActions RBAC', () => {
   const mockItem = {

@@ -54,6 +54,9 @@ docker compose up -d db
 O comando abaixo irá aplicar as migrações do banco, popular os dados iniciais (seed) e iniciar o Frontend e Backend simultaneamente:
 
 ```bash
+cd backend
+bun run test:setup
+cd ..
 bun run dev:init
 ```
 
@@ -105,8 +108,7 @@ bun run test
 
 ### Extras
 
-O sistema envia uma **mensagem** para o  [ntfy](https://ntfy.sh/pitang_reimbursements_notifications) sempre que uma solicitação for criada ou atualizada.
-
+O sistema envia uma **mensagem** para o [ntfy](https://ntfy.sh/pitang_reimbursements_notifications) sempre que uma solicitação for criada ou atualizada.
 
 ## 🛠️ Tecnologias Utilizadas
 
