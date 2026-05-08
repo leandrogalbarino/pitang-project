@@ -19,15 +19,21 @@ vi.mock('swr', () => ({
   SWRConfig: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-// Mock do react-router-dom
-vi.mock('react-router-dom', () => ({
-  MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  useNavigate: () => vi.fn(),
-  useLocation: () => ({ pathname: '/' }),
-  useSearchParams: () => [new URLSearchParams(), vi.fn()],
-  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
-  Navigate: vi.fn(),
-}));
+// Mock do react-router-dom com reatividade
+vi.mock('react-router-dom', () => {
+  const { useState } = require('react');
+  return {
+    MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    useNavigate: () => vi.fn(),
+    useLocation: () => ({ pathname: '/' }),
+    useSearchParams: () => {
+      const [params, setParams] = useState(new URLSearchParams());
+      return [params, (newParams: any) => setParams(new URLSearchParams(newParams))];
+    },
+    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+    Navigate: vi.fn(),
+  };
+});
 
 describe('CategoriesList Page', () => {
   const renderCategories = () => {
