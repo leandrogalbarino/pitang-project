@@ -89,10 +89,10 @@ bun run test:all
 
 Utiliza **Bun Test** para testes de integração de API.
 
-```bash
+````bash
 cd backend
-bun test:setup  # Prepara o banco de teste
-bun test        # Executa todos os testes de integração
+bun test:setup
+bun test       
 ```
 
 ### Frontend
@@ -102,7 +102,7 @@ Utiliza **Vitest** + **React Testing Library** para testes de componentes e RBAC
 ```bash
 cd frontend
 bun run test
-```
+````
 
 ---
 
