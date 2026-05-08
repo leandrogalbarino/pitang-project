@@ -1,10 +1,9 @@
 import { Outlet } from 'react-router-dom';
-import { Sidebar } from '@/components/dashboard/Sidebar';
+import { Sidebar } from '@/components/ui/dashboard/Sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function DashboardLayout() {
   const { user, signOut } = useAuth();
-
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">

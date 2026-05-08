@@ -5,7 +5,7 @@ import { api, type ApiError } from '@/lib/api-client';
 import { useAuth } from '@/contexts/AuthContext';
 import { userSchema, type UserFormData } from '@/schemas/usersSchema';
 import type { UserFormProps } from '@/types/userTypes';
-import { FormModalLayout } from '@/components/dashboard/FormModalLayout';
+import { FormModalLayout } from '@/components/ui/dashboard/FormModalLayout';
 import { toast } from 'sonner';
 import { SelectGroup } from '@/components/ui/SelectGroup';
 import { InputGroup } from '@/components/ui/InputGroup';

@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import Home from './pages/Home';
+import Home from './pages/home/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CategoriesList from './pages/categories/CategoriesList';

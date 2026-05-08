@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import ListEmpty from '@/components/dashboard/ListEmpty';
-import { TableActions } from '@/components/dashboard/TableActions';
-import { TableContainer } from '@/components/dashboard/TableContainer';
-import { StatusBadge } from '@/components/dashboard/StatusBadge';
+import ListEmpty from '@/components/ui/dashboard/ListEmpty';
+import { TableActions } from '@/components/ui/dashboard/TableActions';
+import { TableContainer } from '@/components/ui/dashboard/TableContainer';
+import { StatusBadge } from '@/components/ui/dashboard/StatusBadge';
 import type { CategoryTableProps } from '@/types/categoriesTypes';
 import { formatCurrency } from '@/lib/utils';
 

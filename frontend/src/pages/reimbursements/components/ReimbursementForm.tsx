@@ -10,14 +10,14 @@ import {
 import { formatDateForInput } from '@/lib/utils';
 import type { Reimbursement } from '@/types/reimbursementTypes';
 import type { CategoriesResponse } from '@/types/categoriesTypes';
-import { FormModalLayout } from '@/components/dashboard/FormModalLayout';
+import { FormModalLayout } from '@/components/ui/dashboard/FormModalLayout';
 import { InputGroup } from '@/components/ui/InputGroup';
 import { toast } from 'sonner';
 import { handleApiErrors } from '@/lib/form-utils';
 // import { data } from 'react-router-dom';
 import { TextAreaGroup } from '@/components/ui/TextAreaGroup';
-import { CategorySelectGroup } from '@/components/dashboard/reimbursements/CategorySelectGroup';
-import { FileAttachmentField } from '@/components/dashboard/reimbursements/FileAttachmentField';
+import { CategorySelectGroup } from '@/components/ui/dashboard/reimbursements/CategorySelectGroup';
+import { FileAttachmentField } from '@/components/ui/dashboard/reimbursements/FileAttachmentField';
 
 interface ReimbursementFormProps {
   reimbursement?: Reimbursement | null;

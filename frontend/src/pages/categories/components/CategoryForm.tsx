@@ -8,7 +8,7 @@ import {
   type CategoryFormData,
 } from '@/schemas/categorySchema';
 import { toast } from 'sonner';
-import { FormModalLayout } from '@/components/dashboard/FormModalLayout';
+import { FormModalLayout } from '@/components/ui/dashboard/FormModalLayout';
 import { handleApiErrors } from '@/lib/form-utils';
 import { InputGroup } from '@/components/ui/InputGroup';
 import { SelectGroup } from '@/components/ui/SelectGroup';

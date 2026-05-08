@@ -7,9 +7,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { Reimbursement } from '@/types/reimbursementTypes';
-import ListEmpty from '@/components/dashboard/ListEmpty';
-import { TableContainer } from '@/components/dashboard/TableContainer';
-import { ReimbursementStatusBadge } from '../../../components/dashboard/reimbursements/ReimbursementStatusBadge';
+import ListEmpty from '@/components/ui/dashboard/ListEmpty';
+import { TableContainer } from '@/components/ui/dashboard/TableContainer';
+import { ReimbursementStatusBadge } from '@/components/ui/dashboard/reimbursements/ReimbursementStatusBadge';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { ReimbursementTableActions } from './ReimbursementTableActions';
 import { useAuth } from '@/contexts/AuthContext';

@@ -8,11 +8,11 @@ import {
 } from '@/components/ui/table';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserTableProps } from '@/types/userTypes';
-import { UserRoleBadge } from '../../../components/dashboard/users/UserTableComponents';
-import ListEmpty from '@/components/dashboard/ListEmpty';
-import { TableActions } from '@/components/dashboard/TableActions';
-import { TableContainer } from '@/components/dashboard/TableContainer';
-import { StatusBadge } from '@/components/dashboard/StatusBadge';
+import { UserRoleBadge } from './UserTableComponents';
+import ListEmpty from '@/components/ui/dashboard/ListEmpty';
+import { TableActions } from '@/components/ui/dashboard/TableActions';
+import { TableContainer } from '@/components/ui/dashboard/TableContainer';
+import { StatusBadge } from '@/components/ui/dashboard/StatusBadge';
 
 export function UserTable({
   users,

@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { rejectionSchema, type RejectionFormData } from '@/schemas/reimbursementSchema';
-import { FormModalLayout } from '@/components/dashboard/FormModalLayout';
+import {
+  rejectionSchema,
+  type RejectionFormData,
+} from '@/schemas/reimbursementSchema';
+import { FormModalLayout } from '@/components/ui/dashboard/FormModalLayout';
 import { TextAreaGroup } from '@/components/ui/TextAreaGroup';
 import type { Reimbursement } from '@/types/reimbursementTypes';
 
@@ -67,4 +70,3 @@ export function RejectReimbursementDialog({
     </Dialog>
   );
 }
-

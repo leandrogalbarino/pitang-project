@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { UserForm } from '@/pages/users/components/UserForm';
-import { ConfirmActionDialog } from '@/components/dashboard/ConfirmActionDialog';
+import { ConfirmActionDialog } from '@/components/ui/dashboard/ConfirmActionDialog';
 import { api } from '@/lib/api-client';
 import { toast } from 'sonner';
 import type { UserPayload } from '@/contexts/AuthContext';
@@ -80,7 +80,6 @@ export function Sidebar({ user, signOut }: SidebarProps) {
       path: PATH_ROUTES.REIMBURSEMENTS,
       roles: ['ADMIN', 'GESTOR', 'FINANCEIRO', 'COLABORADOR'],
     },
-
 
     {
       name: 'Categorias',

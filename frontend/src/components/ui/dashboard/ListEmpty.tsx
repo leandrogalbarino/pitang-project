@@ -1,4 +1,4 @@
-import { TableCell, TableRow } from '../ui/table';
+import { TableCell, TableRow } from '../table';
 
 export default function ListEmpty({ message }: { message: string }) {
   return (
