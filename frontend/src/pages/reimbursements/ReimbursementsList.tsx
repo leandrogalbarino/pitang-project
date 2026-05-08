@@ -3,13 +3,12 @@ import { useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { api, type ApiError } from '@/lib/api-client';
 import { ReimbursementTable } from './components/ReimbursementTable';
-import { ConfirmActionDialog } from '@/components/dashboard/ConfirmActionDialog';
+import { ConfirmActionDialog } from '@/components/ui/dashboard/ConfirmActionDialog';
 import { toast } from 'sonner';
 import type {
   Reimbursement,
-  ReimbursementListResponse,
 } from '@/types/reimbursementTypes';
-import { PageHeader } from '@/components/dashboard/PageHeader';
+import { PageHeader } from '@/components/ui/dashboard/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { ReimbursementForm } from './components/ReimbursementForm';
 import { RejectReimbursementDialog } from './components/RejectReimbursementDialog';
@@ -18,6 +17,7 @@ import type { RejectionFormData } from '@/schemas/reimbursementSchema';
 import { formatCurrency } from '@/lib/utils';
 import type { CategoriesResponse } from '@/types/categoriesTypes';
 import { ReimbursementFilters } from './components/ReimbursementFilters';
+import { useReimbursements } from '@/hooks/reimbursements/useReimbursements';
 
 const confirmTitles = {
   cancel: 'Cancelar solicitação?',
@@ -52,16 +52,13 @@ export default function ReimbursementsList() {
   const order = searchParams.get('order') || 'date';
   const orderDirection = searchParams.get('orderDirection') || 'desc';
 
-  const { data: response, mutate } = useSWR<ReimbursementListResponse>(() => {
-    const params = new URLSearchParams();
-    if (page > 1) params.set('page', String(page));
-    if (search) params.set('search', search);
-    if (statusFilter) params.set('status', statusFilter);
-    if (categoryFilter) params.set('category', categoryFilter);
-    if (order) params.set('order', order);
-    if (orderDirection) params.set('orderDirection', orderDirection);
-    const query = params.toString();
-    return `/reimbursements${query ? `?${query}` : ''}`;
+  const { reimbursements, pagination, mutate } = useReimbursements({
+    page,
+    search,
+    status: statusFilter,
+    category: categoryFilter,
+    order,
+    orderDirection,
   });
 
   const { data: categoriesResponse } = useSWR<CategoriesResponse>(
@@ -228,7 +225,7 @@ export default function ReimbursementsList() {
       </PageHeader>
 
       <ReimbursementTable
-        reimbursements={response?.data || []}
+        reimbursements={reimbursements}
         onEdit={handleEdit}
         onCancel={(item) => handleActionClick(item, 'cancel')}
         onSubmit={(item) => handleActionClick(item, 'submit')}
@@ -236,10 +233,10 @@ export default function ReimbursementsList() {
         onReject={handleRejectClick}
         onPay={(item) => handleActionClick(item, 'pay')}
         onView={handleView}
-        currentPage={response?.pagination.page}
-        totalPages={response?.pagination.totalPages}
+        currentPage={pagination?.page}
+        totalPages={pagination?.totalPages}
         onPageChange={setPage}
-        totalItems={response?.pagination.total}
+        totalItems={pagination?.total}
         searchValue={search}
         onSearchChange={setSearch}
         extraHeader={

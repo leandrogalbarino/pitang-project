@@ -1,30 +1,23 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import useSWR from 'swr';
 import { api } from '@/lib/api-client';
 import { UserTable } from './components/UserTable';
-import { ConfirmActionDialog } from '@/components/dashboard/ConfirmActionDialog';
+import { ConfirmActionDialog } from '@/components/ui/dashboard/ConfirmActionDialog';
 import { toast } from 'sonner';
-import type { User, UsersListResponse } from '@/types/userTypes';
-import { PageHeader } from '@/components/dashboard/PageHeader';
+import type { User } from '@/types/userTypes';
+import { PageHeader } from '@/components/ui/dashboard/PageHeader';
 import { UserForm } from './components/UserForm';
+import { useUsers } from '@/hooks/users/useUsers';
 
 export default function UsersList() {
-
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Inicializa o estado a partir da URL ou valores padrão
   const page = Number(searchParams.get('page')) || 1;
   const search = searchParams.get('search') || '';
-  
-  const { data: response, mutate } = useSWR<UsersListResponse>(() => {
-    const params = new URLSearchParams();
-    if (page > 1) params.set('page', String(page));
-    if (search) params.set('search', search);
-    const query = params.toString();
-    return `/users${query ? `?${query}` : ''}`;
-  });
-  
+
+  const { users, pagination, mutate } = useUsers({ page, search });
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -76,21 +69,21 @@ export default function UsersList() {
 
   const handleDeleteConfirm = async () => {
     if (!selectedUser) return;
-    
+
     try {
       setIsDeleting(true);
       await api.delete(`/users/${selectedUser.id}`);
-      
+
       mutate();
       setIsConfirmOpen(false);
-      
-      toast.success("Usuário desativado", {
+
+      toast.success('Usuário desativado', {
         description: `O usuário "${selectedUser.name}" foi desativado com sucesso.`,
       });
     } catch (error) {
       console.error('Erro ao deletar usuário', error);
-      toast.error("Erro ao desativar", {
-        description: "Não foi possível desativar o usuário. Tente novamente.",
+      toast.error('Erro ao desativar', {
+        description: 'Não foi possível desativar o usuário. Tente novamente.',
       });
     } finally {
       setIsDeleting(false);
@@ -101,12 +94,15 @@ export default function UsersList() {
   const handleSuccess = () => {
     mutate();
     setIsFormOpen(false);
-    toast.success(selectedUser ? "Usuário atualizado!" : "Novo usuário criado!", {
-      description: selectedUser 
-      ? "As alterações foram salvas com sucesso." 
-      : "O usuário já pode acessar o sistema.",
-    });
     setSelectedUser(null);
+    toast.success(
+      selectedUser ? 'Usuário atualizado!' : 'Novo usuário criado!',
+      {
+        description: selectedUser
+          ? 'As alterações foram salvas com sucesso.'
+          : 'O usuário já pode acessar o sistema.',
+      },
+    );
   };
 
   return (
@@ -119,22 +115,22 @@ export default function UsersList() {
         onOpenChange={handleFormOpenChange}
         onAddNew={handleAddNew}
       >
-        <UserForm 
+        <UserForm
           user={selectedUser}
           onSuccess={handleSuccess}
           onCancel={() => handleFormOpenChange(false)}
         />
       </PageHeader>
 
-      <UserTable 
-        users={response?.data || []}
+      <UserTable
+        users={users}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
         // Pagination Props
-        currentPage={response?.pagination.page}
-        totalPages={response?.pagination.totalPages}
+        currentPage={pagination?.page}
+        totalPages={pagination?.totalPages}
         onPageChange={setPage}
-        totalItems={response?.pagination.total}
+        totalItems={pagination?.total}
         // Search Props
         searchValue={search}
         onSearchChange={setSearch}
@@ -153,8 +149,8 @@ export default function UsersList() {
         confirmText="Sim, desativar"
         description={
           <>
-            Esta ação irá desativar o usuário <strong>{selectedUser?.name}</strong>.
-            Ele não poderá mais realizar login no sistema.
+            Esta ação irá desativar o acesso de{' '}
+            <strong>{selectedUser?.name}</strong> ao sistema.
           </>
         }
       />

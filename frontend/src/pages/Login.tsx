@@ -1,21 +1,6 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ShieldCheck, Loader2 } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-
+import { ShieldCheck } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -23,65 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-import { api, type ApiError } from '@/lib/api-client';
-import { useAuth, type UserPayload } from '@/contexts/AuthContext';
-import { jwtDecode } from 'jwt-decode';
-import { loginSchema, type LoginForm } from '@/schemas/usersSchema';
+import { useAuth } from '@/contexts/AuthContext';
 import { PATH_ROUTES } from '@/constants/routesConstants';
-
-const initialLoginValues: LoginForm = {
-  email: '',
-  password: '',
-};
+import { useLogin } from './auth/hooks/useLogin';
+import { LoginForm } from './auth/components/LoginForm';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { signIn, signed } = useAuth();
-
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { signed } = useAuth();
+  const { handleLogin, isLoading, error } = useLogin();
 
   useEffect(() => {
     if (signed) {
       navigate(PATH_ROUTES.DASHBOARD);
     }
   }, [signed, navigate]);
-
-  const form = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: initialLoginValues,
-  });
-
-  const onSubmit = async (data: LoginForm) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const responseData = await api.post<{ token: string }>(
-        '/auth/login',
-        data,
-      );
-      const { token } = responseData;
-
-      const decoded: UserPayload = jwtDecode(token);
-
-      if (!decoded) {
-        setError('Erro durante a autenticação');
-        return;
-      }
-
-      signIn(token, decoded);
-      navigate(PATH_ROUTES.DASHBOARD);
-    } catch (error) {
-      const apiError = error as ApiError;
-
-      console.error('Login error:', apiError);
-      setError(apiError.message || 'Não foi possível realizar o login.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
@@ -96,63 +37,11 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>E-mail</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="seu@email.com"
-                        {...field}
-                        className="rounded-lg h-11"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Senha</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                        className="rounded-lg h-11"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg text-center animate-shake">
-                  {error}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full h-11 rounded-lg text-base font-semibold"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  'Entrar'
-                )}
-              </Button>
-            </form>
-          </Form>
+          <LoginForm 
+            onSubmit={handleLogin} 
+            isLoading={isLoading} 
+            error={error} 
+          />
         </CardContent>
       </Card>
     </div>
