@@ -57,6 +57,13 @@ O comando abaixo irá aplicar as migrações do banco, popular os dados iniciais
 bun run dev:init
 ```
 
+### 6. Apenas Rodar
+
+O comando abaixo apenas irá rodar o Frontend e o Backend simultaneamente.
+
+```bash
+bun run dev
+```
 ---
 
 ## Usuários para Teste (Seed)
