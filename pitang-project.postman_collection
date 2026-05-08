@@ -1,0 +1,1128 @@
+{
+  "info": {
+    "_postman_id": "183cecbd-155b-48e1-9498-8a12f862f026",
+    "name": "Pitang Project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "42665691"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get list",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{domain}}users/",
+              "host": [
+                "{{domain}}users"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{domain}}users/{{userId}}",
+              "host": [
+                "{{domain}}users"
+              ],
+              "path": [
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Post User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"leandrokise@gmail.com\",\r\n    \"password\": \"Vma224488\",\r\n    \"password2\": \"Vma224488\",\r\n    \"name\": \"Leandro Galbarino\",\r\n    \"birthdayDate\": \"2005-01-30\",\r\n    \"role\": \"ADMIN\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}users/",
+              "host": [
+                "{{domain}}users"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}users/{{userId}}",
+              "host": [
+                "{{domain}}users"
+              ],
+              "path": [
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update other user",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"leandrokise7523@gmail.com\",\r\n    \"password\": \"123\",\r\n    \"password2\": \"1234\",\r\n    \"role\": \"COLABORADOR\",\r\n    \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}users/{{userId}}",
+              "host": [
+                "{{domain}}users"
+              ],
+              "path": [
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update self",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"colaborador@pitang.com\",\r\n    \"password\": \"123456\",\r\n    \"password2\": \"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}users/{{loggedUserId}}",
+              "host": [
+                "{{domain}}users"
+              ],
+              "path": [
+                "{{loggedUserId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reimbursements",
+      "item": [
+        {
+          "name": "Colaborador",
+          "item": [
+            {
+              "name": "Create",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"Produto com problemas...d.asd.as\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"{{categoriesId}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Add Attachments",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "files",
+                      "type": "file",
+                      "uuid": "f8f63c6f-f46a-4279-b685-dcfa33d191ca",
+                      "src": "/C:/Users/Leandro Galbarino/Downloads/1-1.pdf"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/attachments",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "attachments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attachments",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"b9bf5818-3255-4b70-9a85-d35d0da9a87c\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/attachments",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "attachments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"{{categoriesId}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Submit",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/submit",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "submit"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cancel",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/cancel",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "cancel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAzZDgzN2MxLWU0MzgtNDdjYS1iYjQzLTJkNGJjYzI3OGRlOCIsIm5hbWUiOiJDb2xhYm9yYWRvciBQaXRhbmciLCJlbWFpbCI6ImNvbGFib3JhZG9yQHBpdGFuZy5jb20iLCJyb2xlIjoiQ09MQUJPUkFET1IiLCJjcmVhdGVkQXQiOiIyMDI2LTA1LTAxVDAyOjM1OjU0LjYwOFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTA1LTAxVDAyOjM2OjIwLjY1MFoiLCJpYXQiOjE3Nzc2NzAyNTR9.aas9kXUjMby1uDtBpgnNLGZfbjQCM5livK6xkA_DK8k",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Single",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{colaboradorToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gestor",
+          "item": [
+            {
+              "name": "Approve",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/approve",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "approve"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Reject",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"rejectionDescription\": \"A solicitação foi rejeitada devido a não conter informações o suficientes para comprovar os problemas.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/reject",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "reject"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAzZDgzN2MxLWU0MzgtNDdjYS1iYjQzLTJkNGJjYzI3OGRlOCIsIm5hbWUiOiJDb2xhYm9yYWRvciBQaXRhbmciLCJlbWFpbCI6ImNvbGFib3JhZG9yQHBpdGFuZy5jb20iLCJyb2xlIjoiQ09MQUJPUkFET1IiLCJjcmVhdGVkQXQiOiIyMDI2LTA1LTAxVDAyOjM1OjU0LjYwOFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTA1LTAxVDAyOjM2OjIwLjY1MFoiLCJpYXQiOjE3Nzc2NzAyNTR9.aas9kXUjMby1uDtBpgnNLGZfbjQCM5livK6xkA_DK8k",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}categories/",
+                  "host": [
+                    "{{domain}}categories"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Single",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{gestorToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Financeiro",
+          "item": [
+            {
+              "name": "Pay",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}/pay/",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}",
+                    "pay",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Single",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{financeiroToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin",
+          "item": [
+            {
+              "name": "Get All",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}reimbursements/",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Single",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{domain}}reimbursements/{{reimbursementId}}",
+                  "host": [
+                    "{{domain}}reimbursements"
+                  ],
+                  "path": [
+                    "{{reimbursementId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{adminToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get History",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAzZDgzN2MxLWU0MzgtNDdjYS1iYjQzLTJkNGJjYzI3OGRlOCIsIm5hbWUiOiJDb2xhYm9yYWRvciBQaXRhbmciLCJlbWFpbCI6ImNvbGFib3JhZG9yQHBpdGFuZy5jb20iLCJyb2xlIjoiQ09MQUJPUkFET1IiLCJjcmVhdGVkQXQiOiIyMDI2LTA1LTAxVDAyOjM1OjU0LjYwOFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTA1LTAxVDAyOjM2OjIwLjY1MFoiLCJpYXQiOjE3Nzc2NzAyNTR9.aas9kXUjMby1uDtBpgnNLGZfbjQCM5livK6xkA_DK8k",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}reimbursements/{{reimbursementId}}/history",
+              "host": [
+                "{{domain}}reimbursements"
+              ],
+              "path": [
+                "{{reimbursementId}}",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Request Reimbursement",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get all Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{domain}}categories/",
+              "host": [
+                "{{domain}}categories"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}categories/{{categoriesId}}",
+              "host": [
+                "{{domain}}categories"
+              ],
+              "path": [
+                "{{categoriesId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Copy",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}categories/{{categoriesId}}",
+              "host": [
+                "{{domain}}categories"
+              ],
+              "path": [
+                "{{categoriesId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Alimentação\",\r\n    \"amountMax\": 100,\r\n    \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}categories/{{categoriesId}}",
+              "host": [
+                "{{domain}}categories"
+              ],
+              "path": [
+                "{{categoriesId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Eletronicos\",\r\n    \"amountMax\": 1000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}categories/",
+              "host": [
+                "{{domain}}categories"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"gestor@pitang.com\",\r\n    \"password\": \"pitang123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}auth/login",
+          "host": [
+            "{{domain}}auth"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Dashboard Totais",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"description\": \"BMASDASDMAIOS\",\r\n    \"amount\": 10,\r\n    \"expenseDate\": \"2026-05-01\",\r\n    \"categoryId\": \"1231\"\r\n}"
+        },
+        "url": {
+          "raw": "{{domain}}dashboard/stats",
+          "host": [
+            "{{domain}}dashboard"
+          ],
+          "path": [
+            "stats"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDcwMjNhLWMwNzQtNGJlNC04YmI3LTdkYzJlNzNkOTdhNiIsIm5hbWUiOiJBZG1pbiBQaXRhbmciLCJlbWFpbCI6ImFkbWluQHBpdGFuZy5jb20iLCJhY3RpdmUiOnRydWUsInJvbGUiOiJBRE1JTiIsImNyZWF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzA2WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzA2WiIsImlhdCI6MTc3ODI3NTIyMiwiZXhwIjoxNzc4MzYxNjIyfQ.gxZ9tDB1VyfY6BALh2MimnJeJmHsj9e9eP9rl1o3Grs",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "domain",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "colaboradorToken",
+      "value": ""
+    },
+    {
+      "key": "gestorToken",
+      "value": ""
+    },
+    {
+      "key": "financeiroToken",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "loggedUserId",
+      "value": ""
+    },
+    {
+      "key": "categoriesId",
+      "value": ""
+    },
+    {
+      "key": "reimbursementId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

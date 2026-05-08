@@ -3,7 +3,7 @@ import { TableCell, TableRow } from '../table';
 export default function ListEmpty({ message }: { message: string }) {
   return (
     <TableRow>
-      <TableCell colSpan={3} className="h-32 text-center text-slate-400">
+      <TableCell colSpan={6} className="h-24 w-full text-center text-slate-400">
         {message}
       </TableCell>
     </TableRow>
