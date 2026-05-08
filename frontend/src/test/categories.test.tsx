@@ -24,6 +24,7 @@ vi.mock('react-router-dom', () => ({
   MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: '/' }),
+  useSearchParams: () => [new URLSearchParams(), vi.fn()],
   Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
   Navigate: vi.fn(),
 }));
