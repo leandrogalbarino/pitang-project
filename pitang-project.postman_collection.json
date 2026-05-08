@@ -1089,40 +1089,39 @@
   "variable": [
     {
       "key": "domain",
-      "value": ""
+      "value": "http://localhost:3000/"
     },
     {
       "key": "adminToken",
-      "value": ""
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDcwMjNhLWMwNzQtNGJlNC04YmI3LTdkYzJlNzNkOTdhNiIsIm5hbWUiOiJBZG1pbiBQaXRhbmciLCJlbWFpbCI6ImFkbWluQHBpdGFuZy5jb20iLCJhY3RpdmUiOnRydWUsInJvbGUiOiJBRE1JTiIsImNyZWF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzA2WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzA2WiIsImlhdCI6MTc3ODI3NjEyNCwiZXhwIjoxNzc4MzYyNTI0fQ.N5c8bdzuBuKyxiyTnplgK4Dna0veFtcRyLteZyYRjyA"
     },
     {
       "key": "colaboradorToken",
-      "value": ""
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwZDFkMjE2LTYxY2UtNGU3Ni1hMzJhLTQ3YTkzYzE5OTE1ZSIsIm5hbWUiOiJDb2xhYm9yYWRvciBQaXRhbmciLCJlbWFpbCI6ImNvbGFib3JhZG9yQHBpdGFuZy5jb20iLCJhY3RpdmUiOnRydWUsInJvbGUiOiJDT0xBQk9SQURPUiIsImNyZWF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzU4WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzU4WiIsImlhdCI6MTc3ODI3NjE1NCwiZXhwIjoxNzc4MzYyNTU0fQ.JOKrSozKjjqXUy_hDDnAPuyz6cR6lXM0jrpvzeWazwQ"
     },
     {
       "key": "gestorToken",
-      "value": ""
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNkMDQ1ODA2LTJiMDUtNGMyNS04MTM1LWM2YjA4OTBkYzBmYiIsIm5hbWUiOiJHZXN0b3IgUGl0YW5nIiwiZW1haWwiOiJnZXN0b3JAcGl0YW5nLmNvbSIsImFjdGl2ZSI6dHJ1ZSwicm9sZSI6IkdFU1RPUiIsImNyZWF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzI4WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzI4WiIsImlhdCI6MTc3ODI3NjE2NSwiZXhwIjoxNzc4MzYyNTY1fQ.-OutfN5JyKqBFmRmhteaEznuZVvlM227GIVXlaCKbL4"
     },
     {
       "key": "financeiroToken",
-      "value": ""
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlhZWJjM2Y3LTRmNGUtNGRiMi04YmE2LWRhOWFjZDRhMGExMiIsIm5hbWUiOiJGaW5hbmNlaXJvIFBpdGFuZyIsImVtYWlsIjoiZmluYW5jZWlyb0BwaXRhbmcuY29tIiwiYWN0aXZlIjp0cnVlLCJyb2xlIjoiRklOQU5DRUlSTyIsImNyZWF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzQ1WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDUtMDhUMjE6MTk6MzEuMzQ1WiIsImlhdCI6MTc3ODI3NjEzNSwiZXhwIjoxNzc4MzYyNTM1fQ.Cc3Cf1F46ea1nnUpqEiJ6TKu7AUAmM26TqhII2gWCcQ"
     },
     {
       "key": "userId",
-      "value": ""
+      "value": "00d1d216-61ce-4e76-a32a-47a93c19915e"
     },
     {
       "key": "loggedUserId",
-      "value": ""
+      "value": "00d1d216-61ce-4e76-a32a-47a93c19915e"
     },
     {
       "key": "categoriesId",
-      "value": ""
+      "value": "0b096a70-e2d4-47d7-98e6-792ea0b8a6da"
     },
     {
       "key": "reimbursementId",
-      "value": "",
-      "type": "string"
+      "value": "f5c89839-da3f-45b2-9d88-25f1507a4af6"
     }
   ]
 }
