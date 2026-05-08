@@ -10,7 +10,7 @@
     "db:setup": "cd backend && bun run db:setup",
     "backend:dev": "cd backend && bun run dev",
     "frontend:dev": "cd frontend && bun run dev",
-    "test:all": "cd backend && bun test && cd ../frontend && bun run test"
+    "test:all": "cd backend && bun run test:setup && bun test && cd ../frontend && bun run test"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

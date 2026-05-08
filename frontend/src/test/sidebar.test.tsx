@@ -16,6 +16,7 @@ const mockedUsedNavigate = vi.fn();
 vi.mock('react-router-dom', () => ({
   MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   useNavigate: () => mockedUsedNavigate,
+  useLocation: () => ({ pathname: '/' }),
   Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
   Navigate: vi.fn(),
 }));

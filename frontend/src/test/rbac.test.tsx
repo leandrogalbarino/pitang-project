@@ -8,6 +8,7 @@ import * as AuthContext from '@/contexts/AuthContext';
 vi.mock('react-router-dom', () => ({
   MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   useNavigate: () => vi.fn(),
+  useLocation: () => ({ pathname: '/' }),
   Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
   Navigate: vi.fn(),
 }));
