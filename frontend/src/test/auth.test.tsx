@@ -6,13 +6,12 @@ import { AuthProvider } from '@/contexts/AuthContext';
 
 // Mock do useNavigate
 const mockedUsedNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<any>('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockedUsedNavigate,
-  };
-});
+vi.mock('react-router-dom', () => ({
+  MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useNavigate: () => mockedUsedNavigate,
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+  Navigate: vi.fn(),
+}));
 
 describe('Login Page', () => {
   const renderLogin = () => {

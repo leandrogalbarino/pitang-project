@@ -1,24 +1,29 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import Dashboard from '@/pages/Dashboard';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import * as AuthContext from '@/contexts/AuthContext';
 
-// Mock do hook useAuth que está no AuthContext
-vi.mock('@/contexts/AuthContext', async () => {
-  const actual = await vi.importActual('@/contexts/AuthContext');
-  return {
-    ...(actual as any), // eslint-disable-line @typescript-eslint/no-explicit-any
-    useAuth: vi.fn(),
-  };
-});
+// Mock do react-router-dom
+vi.mock('react-router-dom', () => ({
+  MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useNavigate: () => vi.fn(),
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+  Navigate: vi.fn(),
+}));
+
+// Mock do AuthContext de forma robusta
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: vi.fn(),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 describe('Dashboard RBAC (Role Based Access Control)', () => {
   const renderDashboard = () => {
     return render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Dashboard />
-      </BrowserRouter>
+      </MemoryRouter>
     );
   };
 
