@@ -74,7 +74,17 @@ Após rodar o comando de inicialização, você pode acessar o sistema com os se
 
 ## 🧪 Testes Automatizados
 
-### Rodar todos os testes (Fullstack)
+### 1. Configurar Variáveis de Ambiente
+
+Crie um arquivo `.env.test` na pasta `backend/` seguindo o exemplo abaixo:
+
+```env
+DATABASE_URL="SEU_DATABASE_URL"
+JWT_PRIVATE_KEY="SUA_CHAVE_SECRETA_AQUI"
+HTTP_PORT=3001
+```
+
+### 2. Rodar todos os testes (Fullstack)
 
 Na raiz do projeto:
 
@@ -89,8 +99,8 @@ Utiliza **Bun Test** para testes de integração de API.
 ````bash
 cd backend
 bun test:setup
-bun test       
-```
+bun test
+````
 
 ### Frontend
 
