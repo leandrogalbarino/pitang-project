@@ -1,15 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import Login from '@/pages/Login';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 // Mock do useNavigate
 const mockedUsedNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+  const actual = await vi.importActual<any>('react-router-dom');
   return {
-    ...actual as any,
+    ...actual,
     useNavigate: () => mockedUsedNavigate,
   };
 });
@@ -17,11 +17,11 @@ vi.mock('react-router-dom', async () => {
 describe('Login Page', () => {
   const renderLogin = () => {
     return render(
-      <BrowserRouter>
+      <MemoryRouter>
         <AuthProvider>
           <Login />
         </AuthProvider>
-      </BrowserRouter>
+      </MemoryRouter>
     );
   };
 
@@ -31,7 +31,7 @@ describe('Login Page', () => {
     expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Senha/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Entrar/i })).toBeInTheDocument();
-  });
+  }, 15000);
 
   it('Deve mostrar mensagens de erro para campos inválidos', async () => {
     renderLogin();

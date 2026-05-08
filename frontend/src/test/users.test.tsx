@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import UsersList from '@/pages/users/UsersList';
@@ -5,10 +6,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { SWRConfig } from 'swr';
 
 // Mock do hook useSWR
-vi.mock('swr', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+vi.mock('swr', () => {
   return {
-    ...actual,
+    mutate: vi.fn(),
+    SWRConfig: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     default: vi.fn(() => ({
       data: {
         data: [
