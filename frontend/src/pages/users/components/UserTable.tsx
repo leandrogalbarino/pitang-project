@@ -13,9 +13,11 @@ import ListEmpty from '@/components/ui/dashboard/ListEmpty';
 import { TableActions } from '@/components/ui/dashboard/TableActions';
 import { TableContainer } from '@/components/ui/dashboard/TableContainer';
 import { StatusBadge } from '@/components/ui/dashboard/StatusBadge';
+import { LoadingState } from '@/components/ui/dashboard/LoadingState';
 
 export function UserTable({
   users,
+  isLoading,
   onEdit,
   onDelete,
   searchValue,
@@ -48,34 +50,44 @@ export function UserTable({
         </TableHeader>
 
         <TableBody>
-          {users.map((user) => {
-            const isSelf = user.id === loggedInUser?.id;
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={5} className="h-64">
+                <LoadingState message="Buscando usuários..." />
+              </TableCell>
+            </TableRow>
+          ) : (
+            <>
+              {users.map((user) => {
+                const isSelf = user.id === loggedInUser?.id;
 
-            return (
-              <TableRow key={user.id} className="border-slate-50">
-                <TableCell className="font-medium text-slate-900">
-                  {user.name}
-                </TableCell>
-                <TableCell className="text-slate-500">{user.email}</TableCell>
-                <TableCell>
-                  <UserRoleBadge role={user.role} />
-                </TableCell>
-                <TableCell>
-                  <StatusBadge active={!!user.active} />
-                </TableCell>
-                <TableActions
-                  onEdit={() => onEdit(user)}
-                  onDelete={() => onDelete(user)}
-                  showEdit={!isSelf}
-                  showDelete={!isSelf}
-                  editTitle="Editar usuário"
-                  deleteTitle="Desativar usuário"
-                />
-              </TableRow>
-            );
-          })}
-          {users.length === 0 && (
-            <ListEmpty message="Nenhum usuário encontrado." />
+                return (
+                  <TableRow key={user.id} className="border-slate-50">
+                    <TableCell className="font-medium text-slate-900">
+                      {user.name}
+                    </TableCell>
+                    <TableCell className="text-slate-500">{user.email}</TableCell>
+                    <TableCell>
+                      <UserRoleBadge role={user.role} />
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge active={!!user.active} />
+                    </TableCell>
+                    <TableActions
+                      onEdit={() => onEdit(user)}
+                      onDelete={() => onDelete(user)}
+                      showEdit={!isSelf}
+                      showDelete={!isSelf}
+                      editTitle="Editar usuário"
+                      deleteTitle="Desativar usuário"
+                    />
+                  </TableRow>
+                );
+              })}
+              {users.length === 0 && (
+                <ListEmpty message="Nenhum usuário encontrado." />
+              )}
+            </>
           )}
         </TableBody>
       </Table>

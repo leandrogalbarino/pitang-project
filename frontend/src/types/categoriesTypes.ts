@@ -18,7 +18,7 @@ export interface CategoryTableProps {
   categories: Category[];
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
-
+  isLoading: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   // Pagination

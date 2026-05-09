@@ -12,9 +12,11 @@ import { TableContainer } from '@/components/ui/dashboard/TableContainer';
 import { StatusBadge } from '@/components/ui/dashboard/StatusBadge';
 import type { CategoryTableProps } from '@/types/categoriesTypes';
 import { formatCurrency } from '@/lib/utils';
+import { LoadingState } from '@/components/ui/dashboard/LoadingState';
 
 export function CategoryTable({
   categories,
+  isLoading,
   onEdit,
   onDelete,
   searchValue,
@@ -45,25 +47,35 @@ export function CategoryTable({
         </TableHeader>
 
         <TableBody>
-          {categories.map((category) => (
-            <TableRow key={category.id} className="border-slate-50">
-              <TableCell className="font-medium text-slate-900">
-                {category.name}
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={4} className="h-64">
+                <LoadingState message="Buscando categorias..." />
               </TableCell>
-              <TableCell>
-                <StatusBadge active={category.active} />
-              </TableCell>
-              <TableCell>{formatCurrency(category.amountMax)}</TableCell>
-              <TableActions
-                onEdit={() => onEdit(category)}
-                onDelete={() => onDelete(category)}
-                editTitle="Editar Categoria"
-                deleteTitle="Desativar Categoria"
-              />
             </TableRow>
-          ))}
-          {categories.length === 0 && (
-            <ListEmpty message="Nenhuma categoria encontrada." />
+          ) : (
+            <>
+              {categories.map((category) => (
+                <TableRow key={category.id} className="border-slate-50">
+                  <TableCell className="font-medium text-slate-900">
+                    {category.name}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge active={category.active} />
+                  </TableCell>
+                  <TableCell>{formatCurrency(category.amountMax)}</TableCell>
+                  <TableActions
+                    onEdit={() => onEdit(category)}
+                    onDelete={() => onDelete(category)}
+                    editTitle="Editar Categoria"
+                    deleteTitle="Desativar Categoria"
+                  />
+                </TableRow>
+              ))}
+              {categories.length === 0 && (
+                <ListEmpty message="Nenhuma categoria encontrada." />
+              )}
+            </>
           )}
         </TableBody>
       </Table>

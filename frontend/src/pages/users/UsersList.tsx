@@ -16,7 +16,7 @@ export default function UsersList() {
   const page = Number(searchParams.get('page')) || 1;
   const search = searchParams.get('search') || '';
 
-  const { users, pagination, mutate } = useUsers({ page, search });
+  const { users, pagination, mutate, isLoading } = useUsers({ page, search });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -124,6 +124,7 @@ export default function UsersList() {
 
       <UserTable
         users={users}
+        isLoading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
         // Pagination Props

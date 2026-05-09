@@ -52,7 +52,7 @@ export default function ReimbursementsList() {
   const order = searchParams.get('order') || 'date';
   const orderDirection = searchParams.get('orderDirection') || 'desc';
 
-  const { reimbursements, pagination, mutate } = useReimbursements({
+  const { reimbursements, pagination, mutate, isLoading } = useReimbursements({
     page,
     search,
     status: statusFilter,
@@ -226,6 +226,7 @@ export default function ReimbursementsList() {
 
       <ReimbursementTable
         reimbursements={reimbursements}
+        isLoading={isLoading}
         onEdit={handleEdit}
         onCancel={(item) => handleActionClick(item, 'cancel')}
         onSubmit={(item) => handleActionClick(item, 'submit')}

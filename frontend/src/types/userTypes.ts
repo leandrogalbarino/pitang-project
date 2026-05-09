@@ -14,6 +14,7 @@ export interface UserFormProps {
 
 export interface UserTableProps {
   users: User[];
+  isLoading: boolean;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   // Search

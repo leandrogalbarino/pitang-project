@@ -15,7 +15,10 @@ export default function CategoriesList() {
   const page = Number(searchParams.get('page')) || 1;
   const search = searchParams.get('search') || '';
 
-  const { categories, pagination, mutate } = useCategories({ page, search });
+  const { categories, pagination, mutate, isLoading } = useCategories({
+    page,
+    search,
+  });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -38,7 +41,7 @@ export default function CategoriesList() {
     const nextParams = new URLSearchParams(searchParams);
     if (newSearch) {
       nextParams.set('search', newSearch);
-      nextParams.delete('page'); // Reset to first page on search
+      nextParams.delete('page');
     } else {
       nextParams.delete('search');
       nextParams.delete('page');
@@ -101,7 +104,7 @@ export default function CategoriesList() {
       {
         description: selectedCategory
           ? 'As alterações foram salvas com sucesso.'
-          : 'A categoria já está disponível para uso.',
+          : 'A categoria já pode ser usada em reembolsos.',
       },
     );
   };
@@ -125,6 +128,7 @@ export default function CategoriesList() {
 
       <CategoryTable
         categories={categories}
+        isLoading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
         // Pagination Props

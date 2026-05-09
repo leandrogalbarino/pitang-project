@@ -13,9 +13,11 @@ import { ReimbursementStatusBadge } from '@/components/ui/dashboard/reimbursemen
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { ReimbursementTableActions } from './ReimbursementTableActions';
 import { useAuth } from '@/contexts/AuthContext';
+import { LoadingState } from '@/components/ui/dashboard/LoadingState';
 
 interface ReimbursementTableProps {
   reimbursements: Reimbursement[];
+  isLoading: boolean;
   onEdit: (reimbursement: Reimbursement) => void;
   onCancel: (reimbursement: Reimbursement) => void;
   onSubmit: (reimbursement: Reimbursement) => void;
@@ -34,6 +36,7 @@ interface ReimbursementTableProps {
 
 export function ReimbursementTable({
   reimbursements,
+  isLoading,
   onEdit,
   onCancel,
   onSubmit,
@@ -81,41 +84,51 @@ export function ReimbursementTable({
         </TableHeader>
 
         <TableBody>
-          {reimbursements.map((item) => (
-            <TableRow key={item.id} className="border-slate-50">
-              <TableCell className="font-medium text-slate-900 max-w-[200px] truncate">
-                {(user?.role === 'COLABORADOR'
-                  ? item.description
-                  : item.user?.name) || 'Desconhecido'}
-              </TableCell>
-              <TableCell className="text-slate-500">
-                {item.category?.name || 'Sem categoria'}
-              </TableCell>
-              <TableCell className="text-slate-500">
-                {formatDate(item.expenseDate)}
-              </TableCell>
-              <TableCell className="font-semibold text-slate-900">
-                {formatCurrency(item.amount)}
-              </TableCell>
-              <TableCell>
-                <ReimbursementStatusBadge status={item.status} />
-              </TableCell>
-              <TableCell className="text-right">
-                <ReimbursementTableActions
-                  item={item}
-                  onEdit={onEdit}
-                  onCancel={onCancel}
-                  onSubmit={onSubmit}
-                  onApprove={onApprove}
-                  onReject={onReject}
-                  onPay={onPay}
-                  onView={onView}
-                />
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={6} className="h-64">
+                <LoadingState message="Buscando solicitações..." />
               </TableCell>
             </TableRow>
-          ))}
-          {reimbursements.length === 0 && (
-            <ListEmpty message="Nenhuma solicitação encontrada." />
+          ) : (
+            <>
+              {reimbursements.map((item) => (
+                <TableRow key={item.id} className="border-slate-50">
+                  <TableCell className="font-medium text-slate-900 max-w-[200px] truncate">
+                    {(user?.role === 'COLABORADOR'
+                      ? item.description
+                      : item.user?.name) || 'Desconhecido'}
+                  </TableCell>
+                  <TableCell className="text-slate-500">
+                    {item.category?.name || 'Sem categoria'}
+                  </TableCell>
+                  <TableCell className="text-slate-500">
+                    {formatDate(item.expenseDate)}
+                  </TableCell>
+                  <TableCell className="font-semibold text-slate-900">
+                    {formatCurrency(item.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <ReimbursementStatusBadge status={item.status} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ReimbursementTableActions
+                      item={item}
+                      onEdit={onEdit}
+                      onCancel={onCancel}
+                      onSubmit={onSubmit}
+                      onApprove={onApprove}
+                      onReject={onReject}
+                      onPay={onPay}
+                      onView={onView}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {reimbursements.length === 0 && (
+                <ListEmpty message="Nenhuma solicitação encontrada." />
+              )}
+            </>
           )}
         </TableBody>
       </Table>
