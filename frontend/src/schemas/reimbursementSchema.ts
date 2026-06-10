@@ -14,6 +14,7 @@ export const reimbursementSchema = z.object({
   amount: z
     .number('Informe um valor válido')
     .positive('O valor deve ser maior que zero'),
+  urgencia: z.enum(['BAIXO', 'MEDIO', 'ALTO']),
   expenseDate: z
     .string()
     .min(1, 'A data da despesa é obrigatória')

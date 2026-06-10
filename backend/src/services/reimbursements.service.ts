@@ -34,6 +34,7 @@ export class ReimbursementService {
         description: data.description,
         amount: data.amount,
         expenseDate: dayjs.utc(data.expenseDate).startOf('day').toDate(),
+        urgencia: data.urgencia,
         userId: loggedUser.id,
         categoryId: data.categoryId,
         status: 'RASCUNHO',

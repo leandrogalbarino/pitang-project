@@ -12,6 +12,12 @@ const createCategories = async () => {
       { name: 'Alimentação', amountMax: 500 },
       { name: 'Transporte', amountMax: 300 },
       { name: 'Hospedagem', amountMax: 2000 },
+      { name: 'Viagem', amountMax: 2000 },
+      { name: 'Comida', amountMax: 500 },
+      { name: 'Materias de Construção', amountMax: 2000 },
+      { name: 'Diária', amountMax: 2000 },
+      { name: 'Eletronicos', amountMax: 2000 },
+      { name: 'Cosmeticos', amountMax: 2000 },
       { name: 'Outros', amountMax: 1000 },
     ];
 

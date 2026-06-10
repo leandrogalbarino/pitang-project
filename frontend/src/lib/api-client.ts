@@ -61,7 +61,7 @@ async function apiRequest<T>(
     if (response.status === 401) {
       localStorage.removeItem('@Pitang:token');
       localStorage.removeItem('@Pitang:user');
-      window.location.href = '/login';
+      // window.location.href = '/login';
     }
 
     throw {

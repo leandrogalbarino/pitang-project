@@ -4,7 +4,6 @@ import {
   Tags,
   Users,
   LogOut,
-  ShieldCheck,
   ChevronRight,
   Settings,
   Trash2,
@@ -19,6 +18,7 @@ import { toast } from 'sonner';
 import type { UserPayload } from '@/contexts/AuthContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PATH_ROUTES } from '@/constants/routesConstants';
+import logoPitang from '../../../assets/pitang-logo.png';
 
 interface SidebarProps {
   user: UserPayload | null;
@@ -102,9 +102,12 @@ export function Sidebar({ user, signOut }: SidebarProps) {
   return (
     <aside className="w-64 bg-white border-r flex flex-col p-6 space-y-8">
       <Link to={PATH_ROUTES.HOME} className="flex items-center gap-3 px-2">
-        <div className="bg-primary p-2 rounded-xl">
-          <ShieldCheck className="w-6 h-6 text-white" />
-        </div>
+        <div className="bg-pink w-13 h-13 p-2 rounded-xl">
+  <img 
+  src={logoPitang} 
+  alt="Pitang Logo" 
+            className="w-full h-full object-contain" 
+          /></div>
         <span className="font-bold text-xl tracking-tight">Pitang</span>
       </Link>
 

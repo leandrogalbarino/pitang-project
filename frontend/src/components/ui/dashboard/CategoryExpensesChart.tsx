@@ -19,7 +19,7 @@ export function CategoryExpensesChart({ data, isLoading }: CategoryExpensesChart
   return (
     <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
       <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-        <TrendingUp className="w-5 h-5 text-indigo-500" />
+        <TrendingUp className="w-5 h-5 text-red-500" />
         Gastos por Categoria
       </h3>
 
@@ -30,7 +30,7 @@ export function CategoryExpensesChart({ data, isLoading }: CategoryExpensesChart
           data.map((cat) => (
             <div key={cat.name} className="group">
               <div className="flex justify-between items-end mb-2">
-                <span className="text-sm font-semibold text-slate-600 group-hover:text-indigo-600 transition-colors">
+                <span className="text-sm font-semibold text-slate-600 group-hover:text-red-600 transition-colors">
                   {cat.name}
                 </span>
                 <span className="text-sm font-medium text-slate-500">
@@ -39,7 +39,7 @@ export function CategoryExpensesChart({ data, isLoading }: CategoryExpensesChart
               </div>
               <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
+                  className="h-full bg-red-500 rounded-full transition-all duration-1000 ease-out"
                   style={{
                     width: `${(cat.total / (maxCategoryTotal || 1)) * 100}%`,
                   }}

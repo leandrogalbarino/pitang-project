@@ -25,7 +25,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "amountMax" DOUBLE PRECISION,
+    "amountMax" DOUBLE PRECISION NOT NULL,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

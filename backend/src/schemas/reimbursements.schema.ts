@@ -25,6 +25,8 @@ export const HistoryActionEnum = z.enum([
   'CANCELED',
 ]);
 
+// export const UrgenciaEnum = z.enum(['BAIXO', 'MEDIO', 'ALTO']);
+
 export const ReimbursementRequestSchema = z.object(
   {
     description: z
@@ -33,6 +35,7 @@ export const ReimbursementRequestSchema = z.object(
     amount: z
       .number('Insira o valor.')
       .positive('O valor deve ser maior que zero.'),
+    urgencia: z.enum(['BAIXO', 'MEDIO', 'ALTO']),
     expenseDate: z
       .string()
       .min(1, 'A data da despesa é obrigatória.')
@@ -69,6 +72,7 @@ export const RequestResponseSchema = z.object({
   description: z.string(),
   amount: z.number(),
   expenseDate: z.date(),
+  urgencia: z.string(),
   status: RequestStatusEnum,
   rejectionDescription: z.string().nullable(),
   userId: z.uuid(),

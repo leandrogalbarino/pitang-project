@@ -45,6 +45,7 @@ export function ReimbursementForm({
     categoryId: '',
     description: '',
     amount: 0,
+    urgencia: 'BAIXO',
     expenseDate: new Date().toISOString().split('T')[0],
   };
 
@@ -160,6 +161,15 @@ export function ReimbursementForm({
           placeholder="0.00"
           registration={register('amount', { valueAsNumber: true })}
           error={errors.amount}
+        />
+
+        <InputGroup
+          label="Urgencia"
+          id="urgencia"
+          type="text"
+          placeholder="Digite a Urgencia"
+          registration={register('urgencia')}
+          error={errors.urgencia}
         />
 
         <InputGroup

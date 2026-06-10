@@ -23,6 +23,13 @@ enum RequestStatus {
   PAGO
   CANCELADO
 }
+// Campo novo no reimbolso chamado urgencia: baixo,médio,alto
+
+enum Urgencia {
+  BAIXO
+  MEDIO
+  ALTO
+}
 
 // Ações para o histórico de auditoria
 enum HistoryAction {
@@ -71,7 +78,7 @@ model ReimbursementRequest {
   rejectionDescription String?       
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  urgencia Urgencia @default(BAIXO)
   user        User             @relation(fields: [userId], references: [id])
   category    Category         @relation(fields: [categoryId], references: [id])
   attachments Attachment[]
